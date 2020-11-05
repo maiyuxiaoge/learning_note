@@ -393,3 +393,174 @@ for (string name:names){
   - Theoretical expected value over all  trees and queries
   - all n elements are equally likely to be searched for.
   - all n! possible insertion orders are equally likely 
+
+
+# treaps tree + heap
+- bst properties wrt keys
+  - larger than all keys in the left subtree
+  - smaller than all keys in right subtree
+- heap property wrt priorities
+  - larger than all priorities below
+
+![picture 1](images/7622651ed0b02e8769359279726d057f12cf980ca19d291be6dfabe58585461e.png)  
+
+# AVL rotations
+![picture 2](images/c51cb41fc098546cc29fb71274f449d5246327c20298f65ef1a215335064da6d.png)  
+
+
+# treap insertion
+1. insert via BST insert algorithm
+2. use AVL rotation to bubble up to fix Heap wrt priorities
+
+
+Randomized search tree
+- user elements as keys (maintain bst)
+- random generate priorities (maintain heap property)
+
+# AVL trees
+- balance factor BF: height of right subtree - height of left subtree
+- avl tree: in which every node has BF of -1,0,or 1
+
+# AVL tree insertion
+1. regular BST insertion
+2. update balance factor
+3. fix broken balance factor using AVL rotation
+
+
+# red-black trees
+1. all nodes must be red or black
+2. the root must be black
+3. if a node is red,all of its children must be black.
+4. for every node u, every possible path from u to a null reference must have the same munber of black nodes
+5. null reference are black
+
+# red-black tree vs avl tree
+- red-black tree is not necessarily an avl tree
+
+# the set adt
+- set: store multiple elements
+- find,insert,remove
+
+# the map adt
+- map: store multiple pairs
+- get,put,remove
+
+# implementing the set and map adts
+- unsorted linked list
+- sorted linked list
+- unsorted arraylist
+- sorted arraylist
+- slef-balancing BST:
+- Hash table
+
+
+# tries
+- trie: Tree structure in wich elements are represented by  paths
+- a four path trie
+![picture 1](images/9769ec850f0ee9003373fa1768d3accc555f3b5bce7e47171864b5a8202d9888.png)  
+
+# multiway tries
+- trie in which nodes can have more than 2 children
+
+## mwt time complexity
+- n : number of words
+- k : length of longest word
+- O(n*k)
+
+
+## mwt space complexity
+- ![picture 2](images/f654c20cbf35405c5eaf5fbaeebc033ba80a9e9415e5ce7b327a1b2803494b96.png)  
+
+- $\Sigma$ = alphabet
+- $|\Sigma|$ = length of alphabet
+- O($n^k$)
+
+
+# ternary search trees (TSTs)
+-  BST:O(klogn),memory efficient
+-  MWT:O(k), memory inefficient
+-  TST: somewhere in between
+![picture 3](images/bd837f80f2168f8b3dbcb2b70f500f2affbb24b39e6d116032d31016e26f7e41.png)  
+![picture 4](images/dcb3fd26d4d66297d3d2823ed19ca4bac89b56a3b2753ad7aca6802f621d51b7.png)  
+
+
+## tst time complexity
+- worst O(n)
+- average O(logn)
+
+# hash function
+- input : an object x
+- output: an integer representation of x
+- property of equality: if x is equal ot y,h(x) must be the same
+- property of inequality: if x is not equal to y, it would be nice if h(x) is not equal to h(y)
+
+## examples:
+```python
+def h(s): //valid not good
+    return 0
+def h(s): //valid
+    out = 0
+    for c in s:
+    out += ascii value of c
+    return out
+
+def h(s): //invalid
+    return a random integer
+
+def h(s): //valid,best
+    out = 0
+    for c in s:
+        out *= 31
+        out += ascii value of c
+    return out
+def h(s): // invalid
+    return current time
+```
+
+$P_{N, M}(\geq 1 collision) =
+1-P_{N, m}(0$ collisions $) = 
+1- 1 \cdot \frac{m-1}{m} \cdot \frac{m-2}{m} \cdot \cdots \frac{m-N+1}{m}
+$
+
+## load factor
+expected total number of collisions:$\sum_{i=1}^{N-1} \frac{i}{n}=\frac{N(N-1)}{2 m} = 1$  
+-> $N=\sqrt{2 m}$
+
+$M=O\left(N^{2}\right)$
+
+expected total number of collisions $=\frac{1}{2}\left(1+\frac{1}{1-\alpha}\right)$
+
+# collision resolution strategies
+## open addressing(linear probing)
+![picture 1](images/7699ce77b6201366261a901694a0931e605f8ac4daab05570de227dd16af3cad.png)  
+
+## double hashing
+![picture 2](images/79fc8de4dd1f78707dc3d337eb1d2719a1e919c714b21ffcffaa7d3ae45b6d27.png)  
+
+
+## closed addressing(separate chaining)
+![picture 4](images/2b9671fc7d1663cc016e1af368b7b9a43e9fe5ddf24ce7a81800a10b6dad7233.png)  
+
+
+# bloom filters and count-min sketches
+## bloom filters
+![picture 3](images/7ec10c39f37ff0e7f5cc47c0d8591e96c97df5f5963871231f2e64bd13396b52.png)  
+
+
+## designing an optimal bloom filter
+1. each hash function uniformly distributed
+2. each insertion is independent
+
+![picture 5](images/8178e01e0b5e2f0a59ddc984919055d7ece00be9289df227f8ffd884afc48e66.png)  
+![picture 6](images/800ce960bb8eed0ef60cd031084ea0ca16352f3330bcd6c5975be30ef24d0d28.png)  
+
+
+## count-min sketches
+- probabilistic data
+- memory-efficient
+- provides upper-bound on counts
+
+![picture 7](images/37ba10709cc2312e97b5d002d41563b8948bd342290a29a1b6b7b32d7ad15c6e.png)  
+
+## design an optimal count-min sketch
+![picture 8](images/87c6a78f43bb85d909b9a35afd1e0960b90c34bc47963d4d681bd679ec466536.png)  

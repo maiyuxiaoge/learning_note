@@ -57,6 +57,12 @@ class Solution:
                 parents[u] = parents[parents[u]]
                 u = parents[u]
             return u
+        def union(a,b):
+            a,b = x
+            pa = find(a)
+            pb = find(b)
+            if pa != pb:
+                parents[pa] = pb
 
         def distance(x):
             return abs(points[x[0]][0]-points[x[1]][0])+abs(points[x[0]][1]-points[x[1]][1])
@@ -82,4 +88,39 @@ class Solution:
 - 树的定义： 全部连通（并查集） +    边树+1== 节点数
 - 树和图可以互相转换
 - 数据量小于16考虑数位dp
-- 
+- 若数据有明确上限和下限并且数据量很大考虑二分法
+- 单调栈 ： 单调且按顺序  对于字符串，数组依次、连续的处理有用
+- 对于明显的结果可以直接返回结果，有可能会减少复杂度
+- 图的问题可以借用辅助点（虚点），比如gcd问题 以及有多个子图的问题
+- 1 + n/2 + n/3 ..... 为调和级数，表面O(n2) ,实则为nlogn
+
+- union-find 模板
+```python
+    length = len(points)
+    parents = [i for i in range(length)]
+    def find(u):
+        while parents[u] != u:
+            parents[u] = parents[parents[u]]
+            u = parents[u]
+        return u
+    def union(a,b):
+        a,b = x
+        pa = find(a)
+        pb = find(b)
+        if pa != pb:
+            parents[pa] = pb                    
+```
+
+- 二位数组的问题也可以看作图的问题使用unionfind以及最短路劲算法
+
+
+- 找到一条从左上角到右下角的「最短路径」
+
+常用的方法：
+
+「二分答案」：我们可以对最短路径的长度进行二分。
+
+「并查集」：我们可以将所有边按照长度进行排序并依次添加进并查集，直到左上角和右下角连通为止。
+
+「最短路」：我们可以使用任一单源最短路径的算法，只需要在维护当前路径长度时，将其修改为题目中的定义即可。
+
