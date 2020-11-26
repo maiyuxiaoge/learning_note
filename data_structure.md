@@ -564,3 +564,136 @@ expected total number of collisions $=\frac{1}{2}\left(1+\frac{1}{1-\alpha}\righ
 
 ## design an optimal count-min sketch
 ![picture 8](images/87c6a78f43bb85d909b9a35afd1e0960b90c34bc47963d4d681bd679ec466536.png)  
+
+# Aho-Corasick Automaton
+## matching a database of many short strings to a long query string
+![picture 2](images/4dd524ac7d27f20ef4e8aa5f0778e37ff7b14a510a082cc8d3cd0f9b03a005a7.png)  
+
+## aho-corasick automaton
+![picture 3](images/69d3c441c7902114e8078be9a92b344641b967ee4225e07d0d1f8f72de0c446a.png)  
+
+## dictionary link
+![picture 4](images/14c4ed1589017c4bd19b4e7fe9c33727ec4eb15def2f385be21dfd3e343ba23c.png)  
+
+# suffix arrays and burrows-wheeler transform(BWT)
+## suffix arrays
+![picture 5](images/29132374d4d7a408b1aa9d1525e79e49939e8d5dfdbfe530645eba0c6a6dd0cb.png)  
+
+
+## suffix array search
+![picture 6](images/33e8ea918ed45b1d118826f1a32260bafa5517d7b07d541db5965db1a8ddeb66.png)  
+
+- O(klogn)
+
+## burrows wheeler tranform
+![picture 7](images/0794cea7cce83939e79853725fa54e5df276d4389cb42537c1abab14920b83a2.png)  
+
+## inverting the bwt
+![picture 8](images/ff0c66d12f7fe56b2367b830ab424234f8ce5e8a100e7d98d80cb7916ed5ee0f.png)  
+
+
+## pattern matching usring the BWT
+![picture 10](images/8dbb5de9f24f77d1837e76eb169e3ead3d9db088de07602ea8e9cb6caa015120.png)  
+
+
+# Message encoding
+## Coding Tree
+![picture 1](images/87fc9f5eeebdc9cce4c477aa5f7d4430affd6ad7687dadea1735df7c32db9862.png)  
+
+## information vs. data
+- information: content of some message
+  - tells us details about some system
+- data: raw unit of information
+  - representation of information
+
+## entropy
+- entropy: measure of disorder(non-uniformity) of a system
+- Shannon entropy: expected value(average) of the information contained in some data
+
+
+## data uniformity and information
+- uniformity: lack of variation among symbols in a message
+
+- more uniform -> less entropy -> less information
+
+# Huffman coding
+## prefix code
+- an encoding in which no symbol is represented by a code that is a prefix of the code representing another symbol
+
+![picture 1](images/7aaef0606bb635407ca5128294e4c33df89384ab0e138673cfb9d211ba201bbc.png)  
+
+## a lower bound on data compression
+$$\sum_{x} P_{x} \log _{2}\left(\frac{1}{x}\right)$$
+
+![picture 2](images/af1ddeb26cb24af8220dea5612d18aa3cb2086c6729b80aa8522dedf84ab6d25.png)  
+
+## huffman tree construction
+1. compute frequencies of symbols in message
+2. start with a forest of single-node trees(symbol w/frequency)
+3. while there is more than one tree in the forest
+   1. remove 2 trees with lowest frequency from forest
+   2. create new node with frequency = t1's frequency + t2' frequency to be their parent
+   3. insert this new node into the forest
+
+## huffman encoding& decoding
+![picture 3](images/612764aa8ef8680011153cebc29a39c060fb34b0cb4f31fc908adaca0c728406.png)  
+
+# bitwise input/output(I/O)
+## bytewise(I/O)
+![picture 4](images/1937be58e58cfaad342820b388ef6dd60f0d709d65a6e881fafc9055d6bd38b5.png)  
+## bitwise I/O
+![picture 5](images/4c27fe9f4b8b2965874b73747e5242cb757d0a4487c8cddb1ac939cec36ebdf4.png)  
+
+## reading from a bitwise buffer
+![picture 6](images/1d726a9539906f5c1617308e6d15a9da58dffddf9d6bd8169d6762dd6c54d346.png)  
+
+
+## writing to a bitwise buffer
+![picture 7](images/121aa3f4fd4305a17665b3b81c85e18bc45d93fce26ad20c6802b7f8744a4804.png)  
+
+# graphs
+## directed vs undirected
+- directed: an edge(u,v) is from u to v, not v to u
+- undirected: an edge(u,v) is from u to v and v to u
+## weighted vs unweighted
+
+## cycles
+- a valid path starting and ending at the same node
+  
+## classes of graphs
+- structured: a disconnected collection of nodes
+- sequential: an ordered collection of connected nodes
+- hierarchical: a ranked collection of connected nodes
+- structured: a collection of both connected and disconnected nodes
+
+## multigraphs
+- multigraphs: graph in which a pair of nodes may have multiple distinct edges
+
+
+# graph representation
+## adjacency matrix
+![picture 1](images/7cca38e0da41ede6b3f90e5f903501080ce02cebd045f9f6c5a3c77993ff569d.png)  
+
+## adjecency list
+![picture 2](images/79d6feb9187c5669d31fbf067b69172db916bffff3603611868ecd32ac63c17d.png)  
+
+
+# breadth first search(BFS)
+![picture 3](images/b4bfa0e7ec46b63d37a8c8be876622546266e338127a4164b04d5f9f9a8c4369.png)  
+
+
+# depth first search(DFS)
+![picture 4](images/6cacba97059eedf6be7e1effda09dc1175c2c8440203585307457534caff75d9.png)  
+
+# bfs and dfs time complexity
+![picture 5](images/bbc7c1b2f7eb491bd290da023813312b1f72a932daf1d016f27bb0dbfdc369ee.png)  
+
+
+# dijkstra's algorithm
+![picture 6](images/5f7152f1da7e34fb37f174ebbeaa0911e67fa5d1a4d288bc545b4368a08f08f4.png)  
+
+# dijkstra's algorithm time complexity
+![picture 7](images/4e21139e165f0e454448303a1c5ce4eb52dff96b8c5d52bd501e34543ae5a8b5.png)  
+
+
+#

@@ -124,3 +124,87 @@ class Solution:
 
 「最短路」：我们可以使用任一单源最短路径的算法，只需要在维护当前路径长度时，将其修改为题目中的定义即可。
 
+树状数组：
+单点修改，求前缀和
+```python
+    sum_ = [0]*(10**5+1)
+    def lowbit(x):
+        return x & (-x)
+    def add(x,k):
+        while x< 10**5+1:
+            sum_[x] += k
+            x += lowbit(x)
+    def get(x):
+        ret = 0
+        while x >0:
+            ret += sum_[x]
+            x -= lowbit(x)
+        return ret
+
+```
+
+- o(n) : 双指针，优先队列，unionfind，记忆化dfs，栈，队列，s
+- o(nlogn): 二分，树状数组，排序
+记忆化dfs需要先设置 dic[index] = float("inf"),之后if index in dic 才能正确运行，不会出现循环调用
+
+- 向右跳无边界的题目有可能需要自定义常数
+
+- 组合数计算
+```c++
+void pre(){
+    for(int i = 0; i < 1001; i++) C[i][0] = C[i][i] = 1;
+    for(int i = 1; i < 1001; i++) {
+        for(int j = 1; j <= i; j++) {
+            C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % mod;
+        }
+    }      
+}
+
+```
+
+- 整数分块
+
+牛牛的数学老师教会了牛牛除法，牛牛十分开心，他知道任意一个正整数都可以表示为n = p\times k + mn=p×k+m (kk 为商，mm为余数) 的方式，现在死脑筋的牛牛想要计算对于小于等于nn的每一个数p(p\geq 1)p(p≥1)， 计算所有 k \times mk×m 的和。这可难倒了牛牛，请你来帮帮他吧。(由于答案可能过大，请对10^9+710 9+7取模)
+
+$$\sum_{p=1}^{n}\lfloor n / p\rfloor *(n \bmod p)$$
+$$\sum_{p=1}^{n}\lfloor n / p\rfloor *(n-\lfloor n / p\rfloor * p)$$
+
+## 模板
+```python
+class Solution:
+    def cowModCount(self , num ):
+        # write code here
+        const = 10 **9 + 7
+        res = 0
+        start = 1
+        while start <= num:
+            end = (num//(num//start))
+            res += num * (num//start)*(end-start+1)
+            res -= (num//start)* (num//start)*(end+start)*(end-start+1)//2
+            start = end +1
+            res %= const
+        return res
+
+```
+
+# 单调栈模板（第一个比当前元素小的数）
+![picture 9](images/7b9d0e08d7980a4d62d8f4620f765222d059908e9daa836f8ee7f84eb00477cb.png)  
+```java
+    int[] left = new int[numbers.length];
+    LinkedList<Integer> stack = new LinkedList<>();
+    LinkedList<Integer> stack1 = new LinkedList<>();
+    stack.add(Integer.MAX_VALUE);
+    stack1.add(-1);
+    for (int i=0;i< numbers.length;i++){
+        int num = numbers[i];
+        while (num >= stack.getLast()){
+            stack.removeLast();
+            stack1.removeLast();
+        }
+        left[i] = stack1.getLast()+1;
+        stack.add(num);
+        stack1.add(i);
+    }
+```
+
+- 求区间内max，min的问题可以逆向思维考虑每个元素是区间最大值的范围

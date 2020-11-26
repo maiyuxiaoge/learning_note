@@ -207,7 +207,8 @@ next levels are sparse (as usual)
 - often, coalescing is not implemented
   - To hard and not worth it
 
-- LRU is not a gool policy for b+tree buffers 
+- LRU is not a gool policy for b+tree![picture 18](images/2875688756d6996bd42d2c921dbb241dcec458b5c15620e4953ed946fe474594.png)  
+ buffers 
   - should try to keep root in memory at all times
 
 # hashing schemes
@@ -541,3 +542,135 @@ Join with index (Conceptually)
 ![picture 56](images/badbc0c034e332b52aca0010977b0ef0f14b26376214e8740a015f589940fccd.png)  
 
 
+## Opportunities in Joins Using Sorted Indexes
+
+- Estimating cost of query plan
+  - Estimating sizeof results
+  - Estimating # of IOs
+![picture 1](images/abefc849019301569977295c8085108c6e6dd2be17b06b5f58a625ce70d722e7.png)  
+
+- Example
+![picture 1](images/c02e9e09781e0c0440880db8ece21d38f0857c625e396500c056ab68fa7e94b9.png)  
+
+- Size estimates for $W=R 1 \times R 2$
+  - $\mathrm{T}(\mathrm{W})=\mathrm{T}(\mathrm{R} 1) \times \mathrm{T}(\mathrm{R} 2)$
+  - $S(W)=\quad S(R 1)+S(R 2)$
+- Size estimate for $\mathrm{W}=\sigma_{\text {z=val }}(\mathrm{R})$
+  - $S(W)=S(R)$
+  - $\mathrm{T}(\mathrm{W})=\frac{\mathrm{T}(\mathrm{R})}{\mathrm{V}(\mathrm{R}, \mathrm{Z})}$
+- Size estimate for $\mathrm{W}=\sigma_{\mathrm{z} \geq \mathrm{val}}(\mathrm{R})$
+  - T(W) = 
+
+![picture 2](images/2c1685697173f4bda5e0a53410ad60ea49e0c43c584a1f3997e43ff9f2add6b3.png)  
+![picture 3](images/9db923a20e85e7d4e4453e42fd7351a7f821b2386f4698bbdafe25616292bf92.png)  
+![picture 4](images/5654e34c3f984b5bb2461b1ed416e3211028b0d9a3c749269a7215f5e2f7f5ea.png)  
+
+- size estimate for $W=R 1 \bowtie R 2$
+![picture 5](images/6fbc92d655d3aa7dfbc688db121d9916e4dcb3abd5d352c4986978571e5af375.png)  
+![picture 6](images/bd0307959dcf1d1e7782a88e71341cffab327315b9aab663920d370c4da88003.png)  
+
+![picture 7](images/ad45470f581d2e5372f91041a9ff2b772b5efea851d0c70aecec8b883e383d3c.png)  
+
+![picture 8](images/7882567be8efeb0e91dcb7a45470014a26a14d75689551e141b3cc3a64818b0e.png)  
+![picture 9](images/6807cf0318f0e02df8bfa9b183840076ae2ff45cf5bd8ef4dd861425e0768a52.png)  
+
+
+- Example
+
+![picture 10](images/0cb63c57f1df129c4488a3abb63798ffe6ddec13a900a442695efc12a47fa887.png)  
+
+![picture 11](images/e45ae486d551f64b5754e55e935cde4069b9a941d15e1bbd741775c0cd6502fe.png)  
+
+
+# Arranging the Join Order: the Wong-Youssefi algorithm (INGRES)
+
+## challenges with Large Natural Join Expressions
+
+![picture 12](images/ac1f9023a7f998005b91b6ab0d48167b2e14a8555e3ff56cabd2ebb7bfc067fd.png)  
+![picture 13](images/e4d0beb7dc16b7ff315f8baa8535f289b4120a8bab018478f728327856465291.png)  
+
+
+## Wong-Yussefi algorithm assumptions and objectives
+![picture 14](images/87cf4722cdb60dbca7c50c465cafc4a7640ad4ebfcad1ad13ba7856d227abf01.png)  
+![picture 15](images/f5288215c32916083ac586b403fb04dd4c493619ba6eab37d740c932da766a8d.png)  
+
+
+# failure recovery
+
+## Integrity or correctness of data
+- Would like data to be “accurate” or“correct” at all times
+
+## Integrity or consistency constraints
+![picture 1](images/0874e605b0a2744c62daf3e26142e99038be214aba6c155b0f06bbd56b4cffc4.png)  
+
+- Big working assumption:
+
+If T starts with consistent state +T executes until completion & in isolationT leaves consistent state
+
+## How can we prevent/fixviolations?Preview of the next episodes:
+- Failure Recovery: fixing violations due to failures only•
+- Concurrency Control: fixing violations due to concurrency & data sharing only
+- finally a mix of the two: fixing violations that are stem from interaction of failures with sharing
+
+# failure and recovery
+## failure model
+![picture 2](images/48c5256832c94c65a699057bbc54cf8f95ce56207b45d4ccb04186561fb75463.png)  
+
+
+- Desired events:see product manuals
+- Undesired expected events:
+  - System crash
+    - memory lost
+    - cpu halts, resets
+
+- Examples:
+  - Disk data is lost
+  - Memory lost without CPU halt
+  - Skynet’sCPU decides to wipe out its programmers
+
+![picture 3](images/9b009796a825eb38d589b5ff8f44d22aa01e1d20b99168ecb6491b84978f24e9.png)  
+
+![picture 4](images/b3147cb4bf97776a98c436d539e716a18bd2c9906ec257426088f67c754a54d5.png)  
+
+![picture 5](images/5bdb672dc1416fbabb2789fea3716f417f2f8d1c72771c26edde43c3dd47a00d.png)  
+
+![picture 6](images/c19bb0b13b754f23d45b77cecc2f3ff3acc1e03c3e3f92fa878f032053db7450.png)  
+
+
+## one solution: undo logging(immediate modify)
+![picture 10](images/6e67cddb662504acddf0136017a35263e6a5a4f747bfd8c50df171a0291e110b.png)  
+
+- one complication
+  - Log is first written in memory
+  - Not written to disk on every action
+- two complication
+
+
+## Undo logging rules
+1. For every action generate undo log record (containing old value)
+2. Before x is modified on disk, log records pertaining to  x must be on disk (write ahead logging: WAL)
+3. Before commit is flushed to log, all writes of transaction must be reflected on disk
+
+## Recovery rules
+![picture 11](images/dcb75458d84bf86fb0eb326b3f2db9845982435e223075c49da6b0664bbf5eb0.png)  
+![picture 13](images/27c8874da456de63b84835c5c8acf14e321a3847f7f07f7405443c9aeb1bdd13.png)  
+
+## redo logging rules
+![picture 14](images/52961dcd54bef9b51431df3123e12d61a400448080930d5ed55572cd82a6738a.png)  
+![picture 15](images/53f83ca119ac3ec1864d7a10726e1a68ea1c4b24fef252fd6c3d0ac3a02a11d8.png)  
+![picture 16](images/dc80d87c1306d27c3785805bf069dd3ff4117c1b1dd4b08ec619dfd37b10daa6.png)  
+![picture 19](images/6b0711870725c0b1d0bb37ea58becf63cf62745a34062320b9d6c6f8f9b41c7a.png)  
+
+- solution: checkpoints
+- ![picture 20](images/56fe70eb324c8e72ea2b99a296f04554321c11aeff46abf39294dc488731f436.png)  
+
+
+## Key drawbacks:
+- Undo logging:
+  - cannot bring backup DB copies up to date,real writes at end of transaction needed
+- Redo logging
+  - need to keep all modified blocks in memory until commit
+
+## recovery process
+
+![picture 21](images/8f02c8d1b395cd8bd5023a40a3a0a84c76bb785bc741055116874b6114d4a565.png)  
