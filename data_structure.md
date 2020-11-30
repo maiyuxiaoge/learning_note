@@ -450,7 +450,7 @@ Randomized search tree
 - sorted linked list
 - unsorted arraylist
 - sorted arraylist
-- slef-balancing BST:
+- self-balancing BST:
 - Hash table
 
 
@@ -696,4 +696,57 @@ $$\sum_{x} P_{x} \log _{2}\left(\frac{1}{x}\right)$$
 ![picture 7](images/4e21139e165f0e454448303a1c5ce4eb52dff96b8c5d52bd501e34543ae5a8b5.png)  
 
 
-#
+# minimum spanning tree
+## spanning tree(G)
+- contains all nodes of G
+- contains a subset of the edges of G
+- Has no cycles
+- connected
+
+## prim's algorithm
+- start at any node
+- repeat M-1 times:
+  - find the smallest-weight edge(u,v,c) such that u is in your growing MST and V is not
+  - add the edge(u,v,c) to your growing MST
+
+## kuskal's algorithm
+- repeat |E| times
+  - find the smallest-weight edge(u,v,c) such that adding it to your growing subgraph will not cause a cycle
+  - add the edge to your growing subgraph
+
+# disjoint set ADT
+- union: given two elements u and v, merge their sets
+- find: given and element u ,return its set
+
+## up trees:
+- find: the element's sentinel node
+- union: find the elements' sentinel nodes, and make one the child of the other
+
+![picture 1](images/73d43f01253e5d5e0400ee63073ee5a88da55723c0c2a1694afb973339c2d785.png)  
+
+## union by size
+![picture 2](images/3e5af302fed712312d596e2e976abcb533a536e1d1103e177554bb8a6fb934a8.png)  
+
+## union by height
+![picture 3](images/f4df2a9595789ba8a5154485853d3a50e241f0bac079030b5e709d3b2d0671d1.png)  
+
+
+## path compression
+![picture 4](images/2cf078b0ea23953eece036a41fcffafb39ce6d31c60048934651e701364b3a63.png)  
+
+
+# complexity of computational problems
+![picture 5](images/443cbaa2a309db78547f1cf7c24efff80f7764183447c6dd58cea094720b6738.png)  
+
+
+## classes of computational complexity
+- P: problems that can be solved in O(n^c)
+- NP: problems that can be verified in O(n^c)
+  - P is a subset of NP
+- NP-Hard: problems at least as hard as the hardest problem in NP
+- NP-complete: the intersection of NP and NP-hard
+  - the hardest problem in NP
+
+## P vs NP
+- problems that can be solved in O(n^c)
+- NP: problems that can be verified in O(n^c)

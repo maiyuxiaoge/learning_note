@@ -207,4 +207,24 @@ class Solution:
     }
 ```
 
-- 求区间内max，min的问题可以逆向思维考虑每个元素是区间最大值的范围
+- 求区间内max，min的问题可以逆向思维考虑
+
+
+```python
+# 二分的问题
+    mid = (start+ end)//2
+    if ():
+        start = mid +1
+    else:
+        end = mid
+
+    mid = (start + end +1)//2
+    if ():
+        start = mid
+    else:
+        end = mid-1
+
+```
+
+- 通过保存导数和前缀和可以做到单点修改，整体变化
+- 优先队列有时可以用单调栈代替
