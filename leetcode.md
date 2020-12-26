@@ -161,6 +161,19 @@ void pre(){
 }
 
 ```
+```python
+def combine(a,b):
+    const = 10**9 +7
+    c = [[0 for i in range(a+1)] for j in range(a+1)]
+    for  i in range(a+1):
+        c[i][0] = c[i][i] = 1
+    for i in range(1,a+1):
+        for j in range(1,i+1):
+            c[i][j] =  (c[i - 1][j - 1] + c[i - 1][j]) %const
+    
+    return c[a][b]
+
+```
 
 - 整数分块
 
@@ -228,3 +241,13 @@ class Solution:
 
 - 通过保存导数和前缀和可以做到单点修改，整体变化
 - 优先队列有时可以用单调栈代替
+
+枚举子集： mask的子集为 （mark-1）& mark 
+枚举子集的子集 复杂度为3^n  不是 4^n
+
+
+如果题目有查询序列，不一定要按照查询序列查找，可以按一定规律排序之后再查找
+
+类似先处理后查询的问题，查询过程和处理的过程不一定是分开的，可以一边处理一边查询
+
+排序往往可以优化复杂度，若表面on2 的问题经过排序往往能优化到nlogn

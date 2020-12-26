@@ -674,3 +674,209 @@ If T starts with consistent state +T executes until completion & in isolation
 ## recovery process
 
 ![picture 21](images/8f02c8d1b395cd8bd5023a40a3a0a84c76bb785bc741055116874b6114d4a565.png)  
+
+
+# concurrency control
+
+- Want schedules that are “good”, I.e.,equivalent to serial regardless of
+  - initial state
+  - transaction semantics
+- Only look at order of read and writes
+- Example: SC=r1(A)w1(A)r2(A)w2(A)r1(B)w1(B)r2(B)w2(B)
+
+![picture 1](images/c616d18d72614e29f307381ffb660ece989e791d5634bf221a64f017b7de4db8.png)  
+
+![picture 2](images/d1b774945d11bb79f3c0f6eb3fa235959504e49638a27921a531c017864b0d98.png)  
+
+![picture 3](images/977faec13ab0947c4f5d4342578a4a6a6d806d0878ee92aa033fe9a35b5c6005.png)  
+
+![picture 4](images/6c430785dcfae4cd3a8d380a4a95377a73cbfe6bd24b848d600cf7f8af759f55.png)  
+
+
+
+## definition
+- S1, S2 are conflict equivalent schedules if S1 can be transformed into S2 by a series of swaps on non-conflicting actions.
+- A schedule is conflict serializable if it is conflict equivalent to some serial schedule.(T1- > T2)
+
+## Precedence graphP(S)  (S is schedule)
+- Nodes: transactions in S
+- Arcs:  Ti Tj whenever
+  - pi(A), qj(A) are actions in S
+  - pi(A) <S qj(A)
+  - at least one of pi, qj is a write
+
+
+## lemma 
+![picture 5](images/df4afe505eeffda4b48f1f37df37246ea1ac641f7c5e00f6247dffa50893fac0.png)  
+
+![picture 6](images/6ab533898d5b8563f2a58c5dbe3d41f27014ac29fbe21a284c5db6c173aa3924.png)  
+
+![picture 7](images/27412d5cea03ae61d22ae12999bbf3ab0e499a5470c0d67f1f653c2650fbfbc0.png)  
+
+![picture 8](images/fd6ae345f799a739c5ebc0bee2bf3b019ad092f32c13fcbb1a55cf91560f194c.png)  
+
+## How to enforce serializable schedules?
+- Option 1: 
+  - run system, recording P(S)
+  - check for P(S) cycles and declare if execution was good
+  - or abort transactions as soon as they generate a cycle
+- prevent P(S) cycles from occurring 
+![picture 9](images/2a4dfa79b5451b11966e828efb7971e45a6f85c3d999085be8ed1466105e7646.png)  
+
+## A locking protocol
+![picture 10](images/75efd0b5744c6ffab406a612229bad80bc2edbf2de6ec29d6511ae544a5e1f94.png)  
+
+![picture 11](images/72a582db67543c0e678a658208d3079dce120434c8daaf08356c5b1b3f8ab0f3.png)  
+
+![picture 12](images/dc52ccc91d691dadf0d3c4316e8c1422f256091b41a07cad6fab110aceea5ca1.png)  
+
+![picture 13](images/75e045401c0f9c7ef61acc9c1b3e73ccbf2cfc9adaa757e5bbc99694ef45c5c5.png)  
+
+![picture 14](images/2aa8d9881909f5f21f3a39326e079d1a07e47fed22f5dde4aea469f46740d177.png)  
+
+![picture 15](images/112a2bef7923d75967e55d2a299081de0505c25fb63d6e882f2af17875bff149.png)  
+
+![picture 16](images/e238960a1a920590951ed97439cd924acaf58093c0d36acf37a299d3b804ac57.png)  
+
+![picture 17](images/ed0e7e5d1487f5656716ce6a738c9ad2e5f323f0b7f75f7245fa4ccf5bff1d62.png)  
+
+![picture 18](images/458a2025e4d0fb7d0fbcff0c33e5f7cc9d22ed3e718fc3eb183a3702f3d08d85.png)  
+
+![picture 19](images/ab5efb59c7834a5afe978a153fbd453bf0b42030aaaf6e2d7254f9bd34032a77.png)  
+
+![picture 20](images/aa49b51115d1568863c10dd53722661a592852145b67493240831626529b76a4.png)  
+
+![picture 21](images/c3cfc898957adc7cf09be2768cbb889f51c2356512885099d34cb209402374dc.png)  
+
+![picture 22](images/8f0c8290614be0b2e0a700e260805a9311c1f198272d3dc7f887122fd8bbf18b.png)  
+
+![picture 23](images/a5e3301d4e36248df46856ca9bf9907b84f2db372577b57dc7d5659e4f020722.png)  
+
+![picture 24](images/b9a6ac96a543e39b2de024dbda7fe3a6e58098e6326dab714977bde221e29a62.png)  
+
+![picture 25](images/35cb77e841b70bcd4d60e8bf22e434a66056d9d346a70d42737b507dd96fc3bf.png)  
+
+![picture 26](images/b3da34f096212e64de265a4979d903cf3fd11f79a6734fc58d2b35fd84b8640a.png)  
+
+
+## Lock types beyond S/X
+Examples:
+- (1) increment lock
+- (2) update lock
+
+![picture 27](images/b41a1695b95ee696b4c319ada475257047adb477555e0b188fc472a1ba5be10a.png)  
+
+![picture 28](images/4126d25c59b328183487f30029ff0d3faf76d3dfdfb026b7357a946901942a66.png)  
+
+![picture 29](images/0e9373aa9eafd2ee8827fbada60c707a3c95a50b6f9e8d2fde4c874530f86f0a.png)  
+
+![picture 30](images/bcaedfb2ac874b0b67639a9bd2685148660de7fdf5aef7925ecf36c38b2e5a25.png)  
+
+![picture 31](images/712b1627eae9e8ed6f8cf1ead659600e3168cbd6e1a741d7ac8714373ee5238a.png)  
+
+![picture 32](images/cc7ad9046758056afd842c822dbb215a631b46c9c665a7b681034115404984ec.png)  
+
+![picture 33](images/350c56b5ae94f525d8471bb00d177b7534ede4b7265cd3debb4d7b4d84827705.png)  
+
+![picture 34](images/454566da73ef391d4f13d0986503e085856349fe7e9f3917f199c868f966de27.png)  
+
+- Still have a problem: Phantoms
+![picture 35](images/36328e8c2576571d68439b0a4e668204f03735cb1d8a5e44c6f927fc45110dc6.png)  
+
+## Tree-based concurrency control
+![picture 36](images/c8e486d50a3faccd0493d55fe8238e229614cdf1c6cce28fca8d557e13a641e7.png)  
+
+![picture 37](images/17b842d629201c7b0fbc611db1ab6cb7d03b24679b19b8f30834ef0c83a914a3.png)  
+
+![picture 38](images/84332a36334b2b4d986a3c9ec5aa91bc3fb3ed5974fde8c3f22a36aa2a1c2b2e.png)  
+
+![picture 39](images/22ea4f976a25bdf081a52a6027fab3eaa075740516832e75fe86ae84f81ac30e.png)  
+
+![picture 40](images/f6c944dbc7e09f91fe10f71f51227387d88c413722d68462f8f5d6287f072d74.png)  
+
+
+## Validation-based Concurrency Control
+![picture 41](images/533706339b98332c0f7e85cd9c0a797d878b789bb27b056538912df58e152641.png)  
+
+![picture 42](images/30483495a24db690cae5340821aaab6c654413ab5d8cc821b66337356a0fce28.png)  
+
+![picture 43](images/defdcc38a5660eb5407208b93c77e0ca44c874ea65ed57ff697617cac4f5585d.png)  
+
+![picture 44](images/a98f79bb378ac1e25eae3d0c318e786193a6d8de4f5c851ee942a080f47ddacd.png)  
+
+![picture 45](images/798232509ad994d8bb47eae817a39d22cf8078acc721731cc4bb60836af36156.png)  
+
+![picture 46](images/0efdc3c8e1296899fb9c790081f5ff925b0ad1ff2b5fd00ac88440bfbbd0a61a.png)  
+
+![picture 47](images/896ff0bf9c243956487d39ee4837fef72dbafcdb5fb828819a968b68c8961886.png)  
+
+![picture 48](images/8163e3ced95e12713d28ccbefff9ec6aa20f725242dddfa396b31c4a2ea1c3d0.png)  
+
+![picture 49](images/97181a75189a01d2f4fcfe8872fd5ac0c4b2805bd81630f6a627c3c709d37496.png)  
+
+![picture 50](images/f47c7d73a9ed4137d4b1910d5cc76df90ba451d0c10776cd269d1c4402ee51e3.png)  
+
+# More on Concurrency Control and Recovery
+- Cascading rollback, recoverable schedule
+- Deadlocks
+  - Prevention
+  - Detection
+
+![picture 51](images/2f80644ab4415f3ce804172c8fb3de773dcc800f50566f5b68398a8fad9850a1.png)  
+
+![picture 52](images/eef1d22a2f3c2918a3b5f62fe6dc0736f307b78fedc777bcf6de38d833fdfee0.png)  
+
+![picture 53](images/1e5288c21fe2a4afa91543fb0aac85079d1f9e8f1ddd688ab51b2b5369d5e64e.png)  
+
+![picture 54](images/de284c7a31a3f238464e9248b9b75cf655a71b313620c8348872fab6a203a448.png)  
+
+![picture 55](images/64134094a3a11d7ce4184d0aa75af36bc1ae3ebb3403f3db15d467e76872d4bf.png)  
+
+![picture 56](images/ce29edafb429c14de4507b60e0846f4208a26445696532f00f0d982a1cf2ad53.png)  
+
+
+## How to achieve recoverable schedules?
+![picture 57](images/36ee46688051d716593cdbfc6480d42af7824b5467184f612b4a117cbd9788ed.png)  
+
+## Deadlocks
+- Detection
+  - Wait-for graph
+- Prevention
+  - Resource ordering
+  - Timeout
+  - Wait-die
+  - Wound-wait
+
+![picture 58](images/002bd2096956424321f928eabfc57ab9320f55377157d28f77343cdf28db9b8a.png)  
+
+![picture 59](images/c534e5cf265be3c91fd1d97199f312a3f00e0825dcc139cb1a11df5553ae0ef3.png)  
+
+![picture 60](images/2efb0a0da7acfec88cb1875e16c0d6912d3f23a5fdabb0bf0de4275bd9f2d045.png)  
+
+![picture 61](images/c664cc809f4372fb709bb25d166fb947955a634301cff7640a79f38b80394f8b.png)  
+
+![picture 62](images/41e43149d5abe3d15df4cac79d9632119ec28d5ba6864517e9a91a121c701c55.png)  
+
+
+# Integration
+![picture 63](images/094e34501914c5f7bc949c98902d06149ffb68c614c6e9b972a26e75b97ca148.png)  
+
+![picture 64](images/f039580997ec5496f5d516c6e804f4adbb58b772b086f4076cb6c334e25e10c3.png)  
+
+![picture 65](images/d802fe417bcc2b7492d11af7d58f6f28257326164895c726391e54f6151b72fe.png)  
+
+![picture 66](images/86a636679c4c71339539eadb1dd8565aabdb52f42ca6901f4464917042d41324.png)  
+
+![picture 67](images/a50c8f3f0f5f697a3ec15e5f7ba1b72439210441ea97e8f9acda65d42f7f77e0.png)  
+
+![picture 68](images/6017e00b10a865b687973bdf1907bd0e5319bb902b1d9a401451084db18faa2e.png)  
+
+![picture 69](images/dd6de6ac3853b6db2803a9b0dc336d9b7a61fdb0dd908adf0c8de429a5b8ed89.png)  
+
+![picture 70](images/f177e42c203be20d11c8eeb491bfe29546428c93ae59259ca6d81463f05ebcc4.png)  
+
+
+![picture 1](images/30df46685f65899bc684ca734265236c11a4ea4b5f04cae41bc024a5f6204834.png)  
+
+
+![picture 1](images/312a839e06cfbbbf380ceb3ed9dda3157e597ad6f34e4f569b2eb58469cd27a7.png)  

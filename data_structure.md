@@ -585,14 +585,14 @@ expected total number of collisions $=\frac{1}{2}\left(1+\frac{1}{1-\alpha}\righ
 
 - O(klogn)
 
-## burrows wheeler tranform
+## burrows wheeler transform
 ![picture 7](images/0794cea7cce83939e79853725fa54e5df276d4389cb42537c1abab14920b83a2.png)  
 
 ## inverting the bwt
 ![picture 8](images/ff0c66d12f7fe56b2367b830ab424234f8ce5e8a100e7d98d80cb7916ed5ee0f.png)  
 
 
-## pattern matching usring the BWT
+## pattern matching using the BWT
 ![picture 10](images/8dbb5de9f24f77d1837e76eb169e3ead3d9db088de07602ea8e9cb6caa015120.png)  
 
 
