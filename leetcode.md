@@ -251,3 +251,15 @@ class Solution:
 类似先处理后查询的问题，查询过程和处理的过程不一定是分开的，可以一边处理一边查询
 
 排序往往可以优化复杂度，若表面on2 的问题经过排序往往能优化到nlogn
+
+最长上升子序列 ologn 解法
+```python
+    temp = []
+    for i in pool:
+        index = bisect.bisect_left(temp,i)
+        if index < len(temp):
+            temp[index] = i
+        else:
+            temp.append(i)
+
+```

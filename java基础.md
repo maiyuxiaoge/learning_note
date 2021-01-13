@@ -56,3 +56,12 @@ public ThreadPoolExecutor(int corePoolSize,
 ```
 
 - 高三位记录线程当前状态，剩余位记录活动线程数量
+
+# xml 和 json 区别
+- XML是element、attribute和element content。
+- JSON是object、array、string、number、boolean(true/false)和null。
+- 但如个某个 value 也是 object，那么就不可以当作attribute:
+![picture 1](images/b2b1760684d1c0cb4453b0ee20a5802d566fbdc58b45f6bac6e03aefc79315c3.png)  
+- 而JSON因为有object这种类型，可以自然地映射，不需考虑上述的问题，自然地得到以下的格式。
+![-  1](images/982f1b0c0266169ed3544bd474c102a080f376cc4cc685fa57edbbcda9fed71a.png)  
+- 
