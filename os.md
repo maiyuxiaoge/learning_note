@@ -277,3 +277,323 @@ State	transitions
 - Running	in	user	space	vs.	kernel	space	
   - Is	thread	running	in	user	or	kernel	space?	
 - Make	sure	you	understand	the	dis6nc6on!
+
+# Scheduling
+## There	is	No	Single	Best	Policy
+Different	for	
+– your	personal	computer	
+– large	time-shared	computer	
+– computer	controlling	a	nuclear	power	plant	
+
+## Longest	First	vs.	Shortest	First
+![picture 1](images/4cfeca62de127f97863b692089a42b025c1fe5bd5a09c9f8816a34265af72a8f.png)  
+
+- Given	n	processes	with	service	times	S1,	…	,	Sn
+  - Note:	processes	are	numbered	1,	2,	3,	…,	n	
+-  Average	turnaround	time	computed	as	follows
+   - [S1	+	(S1	+	S2)	+	(S1	+	S2	+	S3)	+	…	+	(S1	+	…	+	Sn)]	/	n	
+   - [(n	×	S1)	+	((n-1)	×	S2)	+	((n-2)	×	S3)	+	…	+	Sn]	/	n
+- In	general:	order	by	shortest	to	longest	
+
+## Consider	Different	Arrival	Times
+![picture 2](images/4af06222f375eedafade25a5fae98f215528773963fa5a4d9e22422f28f877da.png)  
+
+## FCFS:	First	Come	First	Served
+![picture 3](images/2170b0f40452179237c11239998b4b4b183c121dee4297709598883b93e9f673.png)  
+- Average	turnaround	time	=	(5	+	7	+	7)/3	=	6.3	
+- Non-preemptive,	simple,	no	starvation	
+- Poor for short	processes	
+
+## RR: Round	Robin
+![picture 4](images/daabb31a7e5395938d45654053956c4d096b145a0ed488cdd880f28d7168ce1c.png)  
+- Average	turnaround	time	=	(9	+	6	+	2)/3	=	5.7	
+- Preemptive,	simple,	no	starvation	
+- Process	waits	at	most	(n	-	1)	x	quantum	
+
+## SPN:	Shortest	Process	Next
+![picture 5](images/ef052d248d9dbb3abc5dfa95318064ca6d65451c257952b90af817d148af54fd.png)  
+- Average	turnaround	time	=	(5	+	8	+	4)/3	=	5.7	
+- Optimal	for	non-preemptive,	allows	starvation	
+- Assumes	service	times	are	known	
+
+## SRT:	Shortest	Remaining	Time
+![picture 6](images/74874fc171dcc0bcd56fcf01a28fd0b3e183811334a0df54b837cd4166a482a0.png)  
+- Average	turnaround	time	=	(9	+	4	+	1)/3	=	4.7	
+- Assumes	service	times	are	known	
+- Optimal	for	preemptive,	but	allows	starvation	
+
+## Multi-Level	Feedback	Queues
+- Priority	queues:	0	(high),	…,	N	(low)	
+- New	processes	enter	queue	0	
+- Select	from	highest	priority	queue	
+- Run	for	T	=	2k quantums
+  -  Used	T:	move	to	next	lower	queue,	FIFO	
+  -  Used	<	T:	back	to	same	queue,	RR	
+-  Due	to	yield	or	higher	priority	arrival	
+- Periodically	boost	(e.g.,	all	to	highest	queue)
+
+![picture 7](images/52b0548ed5bbd8f969aebbac525f9f450c2eedb8dac6d723c54bb749b524fd90.png)  
+![picture 8](images/e4e5207946cf0f30063901b56070d1ffbf6cb75520d7afe15ad88dba8dd4e6ff.png)  
+- Average	Turnaround	Time	=	(9	+	6	+	1)/3	=	5.3	
+- Complex,	adaptive,	highly	responsive	
+- Favors	shorter	over	longer,	possible	starvation
+
+## Priority	Scheduling
+![picture 9](images/19d3b3915d228c747ade3c617c1dd9ec0b83b814d2ef589254d2539384d74750.png)  
+- Allows	scheduling	based	on	external	criteria	
+  - E.g.,	priority	=	1/CPU_time_used,	or	=	f	(pay)	
+
+## Fair	Share	(Proportional	Share)	
+![picture 10](images/1dc7450d4f514e7f03e4a81d3eb4bb4efd8a61ab3c678689cb1a87dd2b2457ed.png)  
+- Goal:	utilization	over	long	run,	actual	≈	request	
+- How	do	we	determine	who	runs	each	quantum?	
+- Select	process	with	minimum	actual/request	ratio	
+
+## Stride	Scheduling	
+- For	processes	A,	B,	C	…	with	requests	RA,	RB,	RC	…	
+- Calculate	strides:	SA	=	1/RA,	SB	=	1/RB,	SC	=	1/RC	…	
+- For	each	process	x,	maintain	pass	value	Px	(init	0)	
+- Schedule:	repeat	every	quantum	
+  - Select	process	x	with	minimum	pass	value	Px,	run	
+  - Increment	pass	value	by	stride	value:	Px	=	Px	+	Sx
+- Optimization:	use	only	integers	for	Rx,	Sx	and	Px		
+  - Calculate	Sx	=	L/Rx	using	very	large	L,	e.g.,	L	=	100000
+
+## Stride	Scheduling	Example
+![picture 11](images/94f1a1e36948ed9d37c6dfbe56f50870d4d6cf0bf9ed5ec68146d2159843defb.png)  
+
+
+## Real	Time	Scheduling
+- Correctness	of	real-time	systems	depend	on	
+  - logical	result	of	computations	
+  - and	the	timing	of	these	results	
+- cType	of	real-time	systems	
+  - Hard	vs.	soft	real-time	
+  - Periodic	vs.	aperiodic
+- Scheduling	
+  - Earliest	Deadline	First	(EDF)	
+  - Rate	Monotonic	Scheduling	(RMS)	
+
+## Periodic	Processes	(or	Tasks)
+![picture 1](images/a7898abfe234f01a68d1742b4d4ed6ec013a7010c26342dd6ac9089b595c5713.png)  
+- Periodic	processes:	computation	is	cyclic	
+- For	each	process,	given	
+  - C	=	CPU	burst,	T	=	period,	U	=	C/T	=	utilization	
+
+## EDF:	Earliest	Deadline	First
+![picture 2](images/474f931a542c641764d24551fb2532cf21ec5bf77db72a5100797cadb08b7ea6.png)  
+- Schedule	process	with	earliest	deadline	
+- If	earlier	deadline	process	appears,	preempt	
+- Works	for	periodic	and	aperiodic	processes	
+- Achieves	100%	utilization	(ignoring	overhead!)	
+- Expensive:	requires	ordering	by	deadlines	
+
+![picture 3](images/999dc4e895dbbde66077fdbd9ae73fd09a45e2e0d18ef7b5e937f917cf62ce69.png)  
+
+## RMS:	Rate	Monotonic	Scheduling	
+![picture 4](images/0f4138f236b6126a06255b58668ac4c465735be19d6a83a76f72b4af0b95c78a.png)  
+
+- If	periodic	processes,	prioritize	based	on	rates	
+- At	start	of	period,	select	highest	priority	
+- Preempt	if	necessary	
+- When	burst	done,	wait	till	next	period	
+- If	U1	+	…	+	Un	≤		n	($2^{1 / n}$	–	1),	all	deadlines	met
+
+### RMS	Test	Passes,	All	Deadlines	Met	
+![picture 5](images/42460e4170e5a24b1eefbd69f74e7f553f738dc38e805e1193be47bfea830f10.png)  
+
+### RMS	Test	Fails,	Deadline	Missed
+![picture 6](images/52ad12b2af82e4ac4df2fd74cb57aff434e326482722d928c2e15002e456e02a.png)  
+
+### RMS	Test	Fails,	But	Deadlines	Met
+![picture 7](images/2050d1ac30cfa22d3a96b50fa5d6a83b3bd1dbbf4728b66bf1742a04f833a950.png)  
+
+## RMS	Optimal	But	Limited
+- RMS	is	simple	and	efficient	
+  - Static	priority	scheduling	based	on	rates	
+- RMS	is	optimal	for	static	priority	algorithms	
+  - If	RMS	can’t	schedule,	no	other	static	priority	can	
+- RMS	is	limited	in	what	it	guarantees	
+  - Utilization	bounded	by	n	(21/n	–	1)	>	ln	2	≈	69%	
+  - Deadline	guarantee	applies	only	if	test	passes	
+- RMS	is	limited	to	periodic	processes	
+
+## Summary
+- CPU	scheduling	is	policy:	depends	on	goals
+
+
+|  scheduling  | property  |
+|  :---:  | :---:  |
+| First	come	first	served | very	simple,	non-preemptive |
+| Round	robin|simple,	preemptive |
+| Shortest	process	next | theoretical,	non-preemptive |
+| Shortest	remaining	time | theoretical,	preemptive	|
+| Multi-level	feedback | adaptive,	responsive,	complex	|
+| Priority| external	criteria |
+| Fair	share | proportional	allocation	|
+| Earliest	deadline	firs | 100%	utilization,	high overhead	|
+| Rate	monotonic	sched | <	100% util,	low	overhead |
+
+
+# Synchronization
+## Synchronization
+- Synchronize:	events	happen	at	the	same	time	
+- Process	synchronization	
+  - Events	in	processes	that	occur	“at	the	same	time”	
+  - Actually,	when	one	process	waits	for	another	
+-  Uses	of	synchronization	
+   - Prevent	race	conditions	
+   - Wait	for	resources	to	become	available
+
+## The	Credit/Debit	Problem
+- Say	you	have	$1000	in	your	bank	account	
+- You	deposit	$100	
+- You	also	withdraw	$100	
+- How	much	should	be	in	your	account?	
+-  What	if	deposit/withdraw	occur	at	same	time?
+
+## Credit/Debit	Problem:	Race	Condition	
+![picture 8](images/3d697201c5b730a89529676c8a3f9dfb6d2ada0a52864be9a74c8f592073b92d.png)  
+
+## To	Avoid	Race	Conditions
+- Identify	related	critical	sections	
+  - Section(s)	of	code	executed	by	different	processes	
+  - Must	run	atomically,	with	respect	to	each	other	
+- Enforce	mutual	exclusion	
+  - Only	one	process	active	in	a	critical	section
+
+## What	Does	Atomic	Really	Mean?
+- Atomic	means	“indivisible”	
+- We	seek	effective	atomicity	
+  - can	interrupt,	as	long	as	interruption	has	no	effect	
+-  It	is	OK	to	interrupt	process	in	critical	section	
+  -  as	long	as	other	processes	have	no	effect	
+- How	to	determine	
+  - Consider	effect	of	critical	section	in	isolation	
+  - Next	consider	interruptions:	if	same	result,	OK
+
+## How	to	Achieve	Mutual	Exclusion?
+- Surround	critical	section	with	entry/exit	code	
+- Entry	code	should	act	as	a	barrier	
+  - If	another	process	is	in	critical	section,	block	
+  - Otherwise,	allow	process	to	proceed	
+- Exit	code	should	release	other	entry	barriers
+
+## Requirements	for	Good	Solution
+- Given	multiple	cooperating	processes	
+  - Each	process	has	a	critical	section	
+  - All	critical	sections	are	to	be	mutually	exclusive	
+1. At	most	one	in	a	critical	section	at	a	time	
+2. Can’t	prevent	entry	if	all	others	not	in	theirs	
+3. Should	eventually	be	able	to	enter	
+4. No	assumptions	about	CPU	speed	or	number
+
+## Software	Lock?
+![picture 9](images/57bebfde99024cb14d291e7e4d4597a3ec064341521382c2ad574fca727c7283.png)  
+- Lock	indicates	if	any	process	in	critical	section
+
+## Take	Turns?
+![picture 10](images/65bf5b51b8623afa1d07aed2accc47c4c9b0ab47fb7ce19c2ede03465488836f.png)  
+- Alternate	which	process	enters	critical	section
+
+## State	Intention?
+![picture 11](images/8dce69f543aba74f70b0ebfd69d8fbe6ddee49e776eca27f3cffe5c83129eac0.png)  
+
+- Process	states	intent	to	enter	critical	section
+
+## Peterson’s	Solution
+![picture 12](images/8f5d7330440ed8834167355d0c784ba2feda432ee2c67a19473f21f61d4db4cc.png)  
+- If	competition,	take	turns;	otherwise,	enter	
+- There	is	a	version	for	n	>	2;	more	complex
+
+# What	about	Disabling	Interrupts?
+- No	interrupts	⇒	no	uncontrolled	context	switches(just yield)
+- No	uncontrolled	context	switches	⇒	no	races	
+- No	races	⇒	mutual	exclusion	
+
+# Test-and-Set	Lock	Instruction:	TSL
+- TSL	mem	(test-and-set	lock:	contents	of	mem)
+  - do atomically (i.e., locking the memory bus) [ test if mem == 0 AND set mem = 1 ]
+- Operations	occur	without	interruption	
+  - Memory	bus	is	locked	
+  - Not	affected	by	hardware	interrupts
+
+## What	TSL	Does,	Expressed	in	C	
+Assume	C	function,	TSL(int	*),	that	is	atomic	
+```c
+TSL(int *lockptr)
+{ 
+  int oldval;
+  oldval = *lockptr
+  *lockptr = 1;
+  return ((oldval == 0) ? 1 : 0);
+} 
+```
+## Mutual	Exclusion	Using	TSL
+![picture 4](images/29494ebd5195cc18c1e475f5739d4c49ca077be0c7720752231d923e19d7cd90.png)  
+- Shared	variable	solution	using	TSL(int	*)	
+  - tests	if	lock	==	0	(if	so,	will	return	1;	else	0)	
+  - before	returning,	sets	lock	to	1	
+- Simple,	works	for	any	number	of	threads	
+- Still	“suffers”	from	busy	waiting	
+
+# Semaphores
+- Synchronization	variable	
+  - Takes	on	integer	values	
+  - Can	cause	a	process	to	block/unblock	
+- wait	and	signal	operations	
+  - wait	(s) decrement;	block	if	<	0	
+  - signal	(s) increment;	if	any	blocked,	unblock	one	
+- No	other	operations	allowed	
+  - In	particular,	cannot	test	value	of	semaphore!	
+
+## Examples	and	Interpretation
+- wait	(s) decrement;	block	if	<	0	
+- signal	(s) increment;	if	any	blocked,	unblock	
+- wait	(1) s	→	0 -	GO	
+- wait	(0) s	→	-1 -	STOP	(i.e.,	block)	
+- signal	(-1) s	→	0 -	GO	and	allow	one	to	GO	
+- signal	(0) s	→	1 -	GO
+
+## USAGE1:Mutual	Exclusion
+![picture 5](images/f2a16c71d1900b5714d4bd5f641c0ec50c3f772fb8f426e1bbe3cf00b498dea7.png)  
+
+## USAGE2: Order	How	Processes	Execute
+![picture 6](images/6db89081d47304781b5d5daf5b8b60624a1053a222dbbcca00b5c58bae27be65.png)  
+- Cause	a	process	to	wait	for	another	
+- Use	semaphore	indicating	condition;	initially	0	
+  - the	condition	in	this	case:	“P0	has	completed”	
+- Used	for	ordering	processes	
+  - In	contrast	to	mutual	exclusion	
+
+## Semaphore	Implementation
+![picture 7](images/914b9d0b69fe468b337aa9fac72cd24e483f1409053035a581c8fd4d21bdd9ea.png)  
+
+## Alternative	Implementation
+![picture 8](images/3f9f3b3d7b16619caeb7595d4875736af7d3149b82ff50c48d023b7106999c11.png)  
+
+## Wait	and	Signal	Must	Be	Atomic
+- Bodies	of	wait	and	signal	are	critical	sections	
+- So,	still	need	mechanism	for	mutual	exclusion!	
+- Use	a	lower-level	(more	basic)	mechanism	
+  - Test-and-set	lock	
+  - Peterson’s	solution	
+- So,	busy-waiting	still	exists	(can	never	remove)	
+  - But	at	lower-level	(within	semaphore	operations)	
+  - Occurrence	limited	to	brief/known	periods	of	time	
+
+## Analysis:	Lower-Level	Busy	Waiting	
+- A	calls	wait	(s),	switch	to	B,	B	calls	wait	(s)	
+  - Switch	occurs	while	A	executing	body	of	wait	
+- Body	of	wait	is	critical	section,	so	B	must	block	
+  - Use	test-set	lock	or	Peterson’s:		busy	waiting	
+- How	long	will	B	be	blocked?	
+  - For	time	it	takes	to	execute	body	of	wait	
+- Small/known	amount	of	time!	
+  - Compare	to	user	critical	section:	unknown	time
+
+## Are	These	Equivalent?
+![picture 9](images/e4aad80f08df42981b38e0da1d1fc15f15326a7c8f6c2b0b965d2995d092f406.png)  
+
+- no  implementation2 has bug in wait
+- \+ and \- has to be finished in the first line

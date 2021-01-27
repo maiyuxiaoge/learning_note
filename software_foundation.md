@@ -291,4 +291,43 @@ int main(){
 4. functors
 
 
-# String
+# functor
+- without functor
+```cpp
+int value = 0;
+int add(int i){
+    value += i;
+}
+int main(){
+    int theInts[10] = {1,2,3,4,5,6,7,8,9,0};
+    for (int theInt: theInts){
+        add(theInt);
+        cout << value << endl;
+    }
+}
+```
+- using functor
+```cpp
+struct Functor{
+    Functor(int aValue):value(aValue){};
+    Functor(const Functor &aCopy){};
+    Functor& operator=();
+
+    int operate()(int aDelta){
+        value += aDelta;
+        return value;
+    }
+    int getValue(){return value};
+protected:
+    int value;
+}
+
+int main(){
+    Functor theFunctor;
+    int theInts[10] = {1,2,3,4,5,6,7,8,9,0};
+    for (int theInt: theInts){
+        theFunctor(theInt);
+    }
+    cout << theFunctor.getValue() << endl;
+}
+```

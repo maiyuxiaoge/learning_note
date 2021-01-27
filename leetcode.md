@@ -261,5 +261,8 @@ class Solution:
             temp[index] = i
         else:
             temp.append(i)
-
+    return len(temp)
 ```
+
+- 矩阵问题多考虑动态规划，以及如果多一行，一列与当前情况有什么不同，有什么关系
+- 矩阵问题若为n^2logn复杂度，可能为对每一行进行排序
