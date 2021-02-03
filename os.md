@@ -597,3 +597,157 @@ TSL(int *lockptr)
 
 - no  implementation2 has bug in wait
 - \+ and \- has to be finished in the first line
+
+
+# InterProcess Communication	(IPC)
+## Cooperating	Processes	
+- Performance:	speed	
+  - Exploit	inherent	parallelism	of	computation	
+  - Allow	some	parts	to	proceed	why	others	do	I/O	
+- Modularity:	reusable	self-contained	programs	
+  - Each	may	do	a	useful	task	on	its	own	
+  - May	also	be	useful	as	a	sub-task	for	others	
+
+## Examples	of	Cooperating	Processes
+![picture 1](images/f21a4cfeaf6278f98a84df6b7dc0f695034b2c2d1fb5ef5aa9d5ae1964a74396.png)  
+
+
+## Inter-Process	Communication	
+- To	cooperate,	need	ability	to	communicate	
+- IPC:	inter-process	communication	
+  - Communication	between	processes	
+- IPC	requires	
+  - data	transfer
+  - synchronization	
+- Need	mechanisms	for	both
+
+- Semaphore is not IPC(no data transfer)
+
+## Three	Abstractions	for	IPC
+- Shared	memory	+	semaphores	
+- Monitors	
+- Message	passing	
+
+## The	Producer/Consumer	Problem
+![picture 2](images/89ac5da7fdd0f36ebe4cfb920bec5e7f3ff1fe98a32a72ca33abac4bdbc14116.png)  
+
+- Producer	produces	data,	inserts	in	shared	buffer	
+- Consumer	removes	data	from	buffer,	consumes	it
+
+## Producer/Consumer:	Shared	Memory
+![picture 3](images/7aa9c8a3ef337fdb5942c5ce43cb1022584d1800e3ed6bf8f05deed0ae3f9c36.png)  
+
+- No	synchronization	
+  - Consumer	must	wait	for	something	to	be	produced	
+- What	about	Producer?	
+  - No	mutual	exclusion	for	critical	sections	
+  - Relevant	if	multiple	producers	or	multiple	consumers
+
+## Recall	Semaphores
+- Semaphore:	synchronization	variable	
+  - Takes	on	integer	values	
+  - Has	an	associated	list	of	waiting	processes	
+-  Operations	
+   - wait	(s) {	s	=	s–1;	block	if	s	<	0	}	
+   - signal	(s) {	s	=	s+1;	unblock	a	process	if	any	}	
+- No	other	operations	allowed	(e.g.,	can’t	test	s)
+
+## Semaphores	for	Synchronization	
+![picture 4](images/52ef2715e89282f23fef48aaf0395ddf580e3287e4a29359ba7c30580040aba3.png)  
+- Buffer	empty,	Consumer	waits	
+- Buffer	full,	Producer	waits	
+- General	synchronization	vs.	mutual	exclusion	
+
+
+## Multiple	Producers
+![picture 5](images/dbfa571e081baa14a6cfb5642caa99c7d0e04f5855fbd719d81038f5e0a269f2.png)  
+- There	is	a	race	condition	in	the	Producer	code	
+- Inconsistent	updating	of	variables	buf	and	in	
+- Need	mutual	exclusion	
+
+## Semaphore	for	Mutual	Exclusion	
+
+![picture 6](images/475938b82873eae974d41dbe297ec66cee2df44db21f2f896671e387ac4547d4.png)  
+- Works	for	multiple	producers	and	consumers	
+- But	not	easy	to	understand:	easily	leads	to	bugs	
+  - Example:	what	if	wait	statements	are	interchanged?
+
+## Monitors
+- Programming	language	construct	for	IPC	
+  - Variables	(shared)	requiring	controlled	access	
+  - Accessed	via	procedures	(mutual	exclusion)	
+  -  Condition	variables	(general	synchronization)	(cannot store value ,cannot remember anything)
+     - wait	(cond):	block	until	another	process	signals	cond
+     - signal	(cond):	unblock	a	process	waiting	on	cond
+- Only	one	process	can	be	active	inside	monitor	
+  - Active	=	running	or	able	to	run;	others	must	wait	
+
+## Producer/Consumer	using	a	Monitor
+![picture 7](images/3879ab9f05414b3e2e4ff05fdc2c8004703665afd3868bc61ddf6ac745179083.png)  
+
+
+## How	Synchronization	Works
+![picture 8](images/972e54bf468b4d56f77ca627e9d23e737d6b2015a5d2674251e0ec7d1a1b6578.png)  
+
+## Issues	with	Monitors
+- Given	P1	waiting	on	condition	c,	P2	signals	c
+  - P1	and	P2	able	to	run:	breaks	mutual	exclusion	
+  - One	solution:	signal	just	before	returning	
+- Condition	variables	have	no	memory	
+  - Signal	without	someone	waiting	does	nothing	
+  - Signal	is	“lost”	(no	memory,	no	future	effect)	
+- Monitors	bring	structure	to	IPC	
+  - Localizes	critical	sections	and	synchronization	
+
+## Message	Passing	
+![picture 1](images/4220d04367e64e236a2993288417bda13a913c0e2313769b200779b0c3f81206.png)  
+- Two	methods	
+  - send (destination, &message)
+  - receive (source, &message)
+- Data	transfer:	in	to	and	out	of	kernel	message	buffers	
+- Synchronization:	receive	blocks	to	wait	for	message
+
+## Producer/Consumer:	Message-Passing
+![picture 2](images/7d0188f046e6d4e146dac242c15b94d248915de86f1178a69e539d5034f04151.png)  
+
+## An	Optimization
+![picture 3](images/508a45ea88e3de5849edc2d14c1308c2c58531b3852f0c06faba9e2c79845dba.png)  
+
+- consume and produce may take time
+
+## Issues	with	Message	Passing
+- Who	should	messages	be	addressed	to?	
+  - ports	(“mailboxes”)	rather	than	processes	
+- How	to	make	process	receive	from	anyone?	
+  - pid = receive (*, &message)
+- Kernel	buffering:	outstanding	messages	
+  - messages	sent	that	haven’t	been	received	yet	
+- Good	paradigm	for	IPC	over	networks	
+ Safer	than	shared	memory	paradigms	
+
+ # Deadlock
+ ## What	is	Deadlock?
+ - Set	of	processes	are	permanently	blocked	
+  - Unblocking	of	one	relies	on	progress	of	another	
+  - But	none	can	make	progress!	
+- Example	
+  - Processes	A	and	B	
+  - Resources	X	and	Y	
+  - A	holding	X,	waiting	for	Y	
+  - B	holding	Y,	waiting	for	X	
+  - Each	is	waiting	for	the	other;	will	wait	forever	
+![picture 4](images/7a841fa7f4d0ce2b1fd251fd162d677ccff25b0cf54869e1de79ded9743ba342.png)  
+
+## Traffic	Jam	as	Example	of	Deadlock
+![picture 5](images/748cc55cb2a42142cca50790a1af999ba03f402b331e5c5e3311d778c48560de.png)  
+
+## Four	Conditions	for	Deadlock
+- Mutual	Exclusion	
+  - Only	one	process	may	use	a	resource	at	a	time	
+- Hold-and-Wait	
+  - Process	holds	resource	while	waiting	for	another	
+- No	Preemption	
+  - Can’t	take	a	resource	away	from	a	process	
+- Circular	Wait	
+  - The	waiting	processes	form	a	cycle	
+
