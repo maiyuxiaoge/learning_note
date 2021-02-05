@@ -1,0 +1,12 @@
+# learning_note
+- 计算机网络(bilibili慕课网)
+- 计算机网络new, 操作系统（王道考研）
+- 设计模式（GOF）
+- data_sturcture(UCSD CSE100)
+- os(UCSD CSE120)
+- database(UCSD CSE232A)
+- software_foundation(UCSD ECE141A)
+- XML， XQuery,XPath,XQueryAdvanced Topics (UCSD CSE232B)
+- leetcode(周赛思路随笔)
+- java基础(java随笔)
+- html&css,jQuery,javascript(尚硅谷)
