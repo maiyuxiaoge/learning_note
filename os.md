@@ -172,7 +172,8 @@ State	transitions
   - system	calls:	fork	(	),	exit	(	),	read	(	),	write	(	),	…	
   - management:	context	switching,	scheduling,	…
 - When	does	the	kernel	run?	
-  - when	system	call	or	hardware	interrupt	occurs	
+  - system	call
+  - hardware	interrupt	occurs	
 - The	kernel	runs	as	part	of	the	running	process	
   - due	to	that	process	having	made	a	system	call	
   - in	response	to	device	issuing	interrupt	
@@ -203,7 +204,7 @@ State	transitions
 
 ## How	a	Context	Switch	Occurs
 - Process	makes	system	call	or	interrupt	occurs	
-  - What’s	done	by	hardware	
+- What’s	done	by	hardware	
   - Switch	from	user	to	kernel	mode:	amplifies	power	
   - Go	to	fixed	kernel	location:	trap/interrupt	handler	
 - What’s	done	in	software	(in	the	kernel)	
@@ -241,7 +242,7 @@ State	transitions
 - Each	thread	requires	user	and	kernel	stacks	
 - Kernel	can	schedule	threads	on	separate	CPUs
 
-## Single	Process,	Mul6ple	Threads	
+## Single	Process,	Multiple	Threads	
 ![picture 41](images/76669980ab613add2643771a2b1b2af98792c65bfc50faacf0baef142cafe7fc.png)  
 
 ## Many	Processes	with	Threads
@@ -276,7 +277,7 @@ State	transitions
   - Is	thread	support	part	of	user	or	kernel	code?	
 - Running	in	user	space	vs.	kernel	space	
   - Is	thread	running	in	user	or	kernel	space?	
-- Make	sure	you	understand	the	dis6nc6on!
+- Make	sure	you	understand	the	distinction!
 
 # Scheduling
 ## There	is	No	Single	Best	Policy
@@ -603,7 +604,7 @@ TSL(int *lockptr)
 ## Cooperating	Processes	
 - Performance:	speed	
   - Exploit	inherent	parallelism	of	computation	
-  - Allow	some	parts	to	proceed	why	others	do	I/O	
+  - Allow	some	parts	to	proceed	while	others	do	I/O	
 - Modularity:	reusable	self-contained	programs	
   - Each	may	do	a	useful	task	on	its	own	
   - May	also	be	useful	as	a	sub-task	for	others	
@@ -751,3 +752,85 @@ TSL(int *lockptr)
 - Circular	Wait	
   - The	waiting	processes	form	a	cycle	
 
+## How	to	Attack	the	Deadlock	Problem
+- Deadlock	Prevention	
+  - Make	deadlock	impossible	by	removing	condition	
+- Deadlock	Avoidance	
+  - Avoid	getting	into	situations	that	lead	to	deadlock	
+- Deadlock	Detection	
+  - Don’t	try	to	stop	deadlocks	
+  - Rather,	if	they	happen,	detect	and	resolve	
+
+## Deadlock	Prevention
+- Simply	prevent	any	single	condition	for	deadlock	
+- Mutual	exclusion	
+  - Relax	where	sharing	is	possible	
+- Hold-and-wait	
+  - Get	all	resources	simultaneously	(wait	until	all	free)	
+- No	preemption	
+  - Allow	resources	to	be	taken	away	
+- Circular	wait	
+  - Order	all	the	resources,	force	ordered	acquisition	
+
+## Deadlock	Avoidance
+- Avoid	situations	that	lead	to	deadlock	
+  - Selective	prevention	
+  - Remove	condition	only	when	deadlock	is	possible	
+- Works	with	incremental	resource	requests	
+  - Resources	are	asked	for	in	increments	
+  - Do	not	grant	request	that	can	lead	to	a	deadlock	
+- Need	maximum	resource	requirements	
+
+## Banker’s	Algorithm
+- Fixed	number	of	processes	and	resources	
+  - Each	process	has	zero	or	more	resources	allocated	
+- System	state:	either	safe	or	unsafe	
+  - Depends	on	allocation	of	resources	to	processes	
+- Safe:	deadlock	is	absolutely	avoidable	
+  - Can	avoid	deadlock	by	certain	order	of	execution	
+- Unsafe:	deadlock	is	possible	(but	not	certain)	
+  - May	not	be	able	to	avoid	deadlock	
+
+## Banker’s	Algorithm
+- Given	
+  - process/resource	claim	matrix	
+  - process/resource	allocation	matrix	
+  - resource	availability	vector	
+- Is	there	a	process	ordering	such	that	
+  - a	process	can	run	to	completion,	return	resources	
+  - resources	can	then	be	used	by	another	process	
+  - eventually,	all	the	processes	complete	
+
+## Deadlock	Detection	and	Recovery
+- Do	nothing	special	to	prevent/avoid	deadlocks	
+  - If	they	happen,	they	happen	
+  - Periodically,	try	to	detect	if	a	deadlock	occurred	
+  - Do	something	(or	even	nothing)	about	it	
+- Reasoning	
+  - Deadlocks	rarely	happen	
+  - Cost	of	prevention	or	avoidance	not	worth	it	
+  - Deal	with	them	in	special	way	(may	be	very	costly)	
+- Most	general	purpose	OS’s	take	this	approach!
+
+## Detecting	a	Deadlock	
+![picture 66](images/dac93308a6fd1e9657a47da43ac4685ee3acd5009c65c5e6864b10389f6d1504.png)  
+
+## Recovery	from	Deadlock
+- Terminate	all	deadlocked	processes	
+  - Will	remove	deadlock,	but	drastic	and	costly	
+- Terminate	deadlocked	processes	one	at	a	time	
+  - Do	until	deadlock	goes	away	(need	to	detect)	
+  - What	order	should	processes	be	ended?	
+- What	about	resources	in	inconsistent	states	
+  - Such	as	files	that	are	partially	written?	
+  - Or	interrupted	message	(e.g.,	file)	transfers?	
+
+## Classical	Synchronization	Problems
+- Producer/Consumer	(Bounded	Buffer)	
+- Dining	Philosophers	
+- Readers/Writers	
+
+## The	Dining	Philosopher’s	Problem
+![picture 67](images/fe97fa4d126f24448b518617d467bcbdc429124dfd63c2784db56706f695547c.png)  
+![picture 68](images/b83f3ce5527f9719f546be59056dd39bb680b6d76c8c2ae8b3982ef7a674326c.png)  
+![picture 69](images/8899534cf63c50b8084169b6bfc9f00bb9b04faf8f568c90966a805b1f6639e3.png)  
