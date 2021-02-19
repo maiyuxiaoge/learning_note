@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "SSH FS - cse120",
+			"uri": "ssh://cse120/"
+		}
+	],
+	"settings": {
+		"sshfs.configs": [
+			{
+				"name": "cse120",
+				"host": "ieng9.ucsd.edu",
+				"root": "/home/solaris/ieng9/cs120w/cs120wrh",
+				"username": "cs120wrh",
+				"terminalCommand": "/usr/bin/bash -l"
+			}
+		]
+	}
+}

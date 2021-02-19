@@ -1,10 +1,11 @@
 {
     "sshfs.configs": [
         {
-            "name": "ieng9",
+            "name": "cse120",
             "host": "ieng9.ucsd.edu",
             "root": "/home/solaris/ieng9/cs120w/cs120wrh",
-            "username": "cs120wrh"
+            "username": "cs120wrh",
+            "terminalCommand": "/usr/bin/bash -l"
         }
     ]
 }

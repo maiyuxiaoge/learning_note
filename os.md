@@ -834,3 +834,199 @@ TSL(int *lockptr)
 ![picture 67](images/fe97fa4d126f24448b518617d467bcbdc429124dfd63c2784db56706f695547c.png)  
 ![picture 68](images/b83f3ce5527f9719f546be59056dd39bb680b6d76c8c2ae8b3982ef7a674326c.png)  
 ![picture 69](images/8899534cf63c50b8084169b6bfc9f00bb9b04faf8f568c90966a805b1f6639e3.png)  
+
+# Memory	Management
+- How	to	allocate	and	free	portions	of	memory	
+- Allocation	of	memory	occurs	when	
+  - new	process	is	created	
+  - process	requests	more	memory	
+- Freeing	of	memory	occurs	when	
+  - process	exits	
+  - process	no	longer	needs	memory	it	requested	
+
+- Each	process	requires	memory	to	store	
+  - Text:	code	of	program	
+  - Data:	static	variables,	heap	
+  - Stack:	automatic	variables,	activation	records	
+  - Other:	shared	memory	regions	
+- Memory	characteristics	
+  - Size,	fixed	or	variable	(max	size)	
+  - Permissions:	r,	w,	x
+
+## Process’s	Memory	Address	Space
+- address	space	
+  - Set	of	addresses	to	access	memory	
+  - Typically,	linear	and	sequential	
+  - 0	to	N-1	(for	size	N)	
+- For	process	memory	of	size	N	
+  - Text	(of	size	X)	at	0	to	X-1	
+  - Data	(of	size	Y)	at	X	to	X+Y-1	
+  - Stack	(of	size	Z)	at	N-Z	to	N-1
+
+![picture 1](images/fdbbc73b7d193d09d42f9dbafbabb5b63fe79e207bb3e40a6906bf7c14e2cb54.png)  
+
+## Compiler’s	Model	of	Memory
+- Compiler	generates	memory	addresses	
+  - Address	ranges	for	text,	data,	stack	
+  - Allow	data	and	stack	to	grow	
+- What	is	not	known	in	compiler	
+  - Physical	memory	size	(to	place	stack	at	high	end)	
+  - Allocated	regions	of	physical	memory	(to	avoid)	
+
+
+## Goal:	Support	Multiple	Processes
+- To	support	programs	running	“simultaneously”	
+  - Implement	process	abstraction	
+  - Multiplex	CPU	time	over	all	runnable	processes	
+- Process	requires	more	than	CPU	time:	memory	
+
+![picture 2](images/bb4904579a18fa2a834c0b056f44459f1ddc671190b762004edb28627a2462d7.png)  
+
+
+## Multiple	Processes:	CPU	+	Memory
+![picture 3](images/ae0100a22de3d570ac8f9b997449a6f3901eeda13569a9262e087d82f6cc8ed1.png)  
+
+## Sharing	the	Physical	Memory
+- If	process	given	CPU,	must	also	be	in	memory	
+- Problem	
+  - Context-switching	time	(CST):	10	µsec	
+  - Loading	from	disk:	10	MB/s
+  - To	load	1	MB	process:	100	msec	=	10,000	x	CST	
+  - Too	much	overhead!		Breaks	illusion	of	simultaneity	
+- Solution:	keep	multiple	processes	in	memory	
+  - Context	switch	only	between	processes	in	memory	
+
+## Memory	Management	Example
+- Physical	memory	starts	as	one	empty	“hole”	
+- Over	time,	areas	get	allocated:	“blocks”	
+- To allocate	memory	
+   - Find	large	enough	hole	
+   - Allocate	block	within	hole	
+   - Typically,	leaves	(smaller)	hole	
+- When	no	longer	needed,	release	
+  - Creates	a	hole,	coalesce	with	adjacent	
+
+## Selecting	the	Best	Hole	
+- If	there	are	multiple	holes,	which	to	select?	
+- Algorithms	
+  - First	(or	next)	fit:	
+    - Simple	
+    - Fast
+  - Best	fit	
+    - Must	check	every	hole	
+    - Leaves	very	small	fragments	
+  - Worst	fit	
+    - Leaves	large	fragments	
+    - Must	check	every	hole	
+- So	which	is	best?	
+  - Consider	tradeoff:	fit	vs.	search	time	
+  - Memory	is	cheap,	time	is	expensive	
+
+## Fragmentation
+- Eventually,	memory	becomes	fragmented	
+- Internal	fragmentation	
+  - Unused	space	within	(allocated)	block	
+  - Cannot	be	allocated	to	others	
+  - Can	come	in	handy	for	growth	
+- External	fragmentation	
+  - Unused	space	outside	any	blocks	(holes)	
+  - Can	be	allocated	(too	small/not	useful?)
+
+## What	if	No	Holes
+There	may	still	be	significant	unused	space	
+- External	fragments	
+- Internal	fragments
+- Approaches	
+  - Compaction	
+    - Simple	idea	
+    - But	very	time	consuming	
+  - Break	block	into	sub-blocks	
+    - Easier	to	fit	
+    - But	complex	
+- So	which	is	best?	
+  - Consider	time	vs.	complexity	tradeoff
+
+## Given	n	blocks,	how	many	holes?
+- Assume	memory	is	fragmented	
+- There	are	n	blocks	allocated	
+- There	are	holes	between	
+- How	many	holes	are	there?
+
+## 50%	Rule:	m	=	n/2
+- Block:	an	allocated	block	
+- Hole:	free	space	between	blocks	
+- The	50%	Rule:	m	=	n/2	
+  - n	=	number	of	blocks	
+  - m	=	number	of	holes	=	n/2
+
+## How	Much	Memory	Lost	to	Holes?
+- Given	we	know	average	sizes	for	blocks,	holes	
+- b	=	average	size	of	blocks	
+- h	=	average	size	of	holes	
+- What	is	fraction	of	memory	lost	to	holes?
+
+## Unused	Memory	Rule:	f	=	k/(k+2)
+- Let	b	=	average	size	of	blocks	
+- Let	h	=	average	size	of	holes	
+- Let	k	=	h/b,	ratio	of	average	hole-to-block	size	
+- f	=	k/(k+2)	is	fraction	space	lost	to	holes	
+
+## Proof	of	Unused	Memory	Rule
+- Given	a	memory	of	size	M	
+  - M	=	mh	+	nb
+  - f	=	mh/M	=	mh/(mh	+	nb)	
+- Assume	that	all	allocations	are	imperfect	fits	
+  - m	=	n/2,	or	n	=	2m	(this	is	the	50%	rule)	
+  - f	=	mh/(mh	+	2mb)	=	h/(h	+	2b)	
+  - If	k	=	h/b,	then	h	=	kb,	and	f	=	kb/(kb	+	2b)	
+- Therefore,	f	=	k/(k	+	2)	
+
+## Some	Values	for	f	=	k/(k	+	2)
+- k	=	1,	f	=	1/3	
+  - avg	hole	size	=	avg	block	size,	33%	waste	
+- k	=	2,	f	=	1/2	
+  - avg	hole	size	=	2x	avg	block	size,	50%	waste	
+- k	=	3,	f	=	3/5	
+  - avg	hole	size	=	3x	avg	block	size,	60%	waste	
+- k	=	8,	f	=	4/5	
+  - avg	hole	size	=	8x	avg	block	size,	80%	waste	
+
+## Limits	of	f	=	k/(k	+	2)
+- In	general,	f	increases	with	increasing	k	
+  - The	larger	the	avg	hole	size	is	to	avg	block	size,	the	 larger	is	the	fraction	of	wasted	memory	
+  - as	k	→	∞,	f	→	1	
+- Alternatively, f	decreases	with	decreasing	k	
+  - The	smaller	the	avg	hole	size	is	to	avg	block	size,	 the	smaller	the	fraction	of	wasted	memory	
+  - as	k	→	0,	f	→	0	
+
+## Pre-sized	Holes	
+- Variable-size	allocations	cause	fragmentation	
+  - So	why	not	have	pre-sized	holes?	
+- Same-sized:	all	holes	same,	easy	allocation	
+  - Inflexible:	may	be	too	small	
+- Variety	of	sizes	(small,	medium,	large,	…)	
+  - More	flexible,	but	more	complex	
+  - What	should	sizes	be?	How	many	of	each?	
+- Not	adaptable;	internal	fragmentation	
+
+## The	Buddy	System
+- Partition	into	power-of-2	size	chunks	
+- Alloc:	given	request	for	size	r
+```
+find chunk larger than r (else return failure)
+while (r ≤ sizeof(chunk)/2)
+divide chunk into 2 buddies (each 1/2 size)
+allocate the chunk
+```
+- Free:	free	the	chunk	and	coalesce	with	buddy
+```
+free the chunk
+while (buddy is also free)
+coalesce 
+```
+
+## Example	of	Buddy	System	
+![picture 4](images/1a3f337913fd503d2941b5107c821513c4a1a5d718bac0d93d4cc93a3415f5cb.png)  
+
+## Data	Structure	for	Buddy	System
+![picture 5](images/8ded4549cea39fe89605c8eb36d3c6cb64f594cf65a332d9f7888b9fa9105c36.png)  
