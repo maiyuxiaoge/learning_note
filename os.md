@@ -1,3 +1,4 @@
+[toc]
 ![picture 11](images/9e7840815eeaed31c2dba40acf625d1d8a860b5e8b94d20fefa3ccc0686598c6.png)  
 # introduction
 ## what is an operating system
@@ -1030,3 +1031,693 @@ coalesce
 
 ## Data	Structure	for	Buddy	System
 ![picture 5](images/8ded4549cea39fe89605c8eb36d3c6cb64f594cf65a332d9f7888b9fa9105c36.png)  
+
+# Logical	Memory
+## What	is	Logical	Memory
+- Logical	memory	=	a	process’s	memory	
+- As	viewed	(referenced)	by	a	process	
+- Allocated	without	regard	to	physical	memory
+
+## Problems	with	Sharing	Memory
+- The	Addressing	Problem	
+  - Compiler	generates	memory	references	
+  - Unknown	where	process	will	be	located	
+- The	Protection	Problem	
+  - Modifying	another	process’s	memory	
+- The	Space	Problem	
+  - The	more	processes	there	are,	the	less memory	each	individually	can	have
+
+![picture 1](images/749c1e17cf5d21af5a22310e35cf524bbc256440eb9ab4a8db95c806289b7dae.png)  
+
+## Address	Spaces	
+- Address	space	
+  - Set	of	addresses	for	memory	
+- Usually	linear:	0	to	N-1	(size	N)	
+- Physical	Address	Space	
+  - 0	to	N-1,	N	=	size	
+  - kernel	occupies	lowest	addresses	(typically)	
+
+![picture 2](images/f8757483c6469151ea9e36cfe9eefd8ffd73eb0e21589bbf141e3e8e8d6a40bd.png)  
+
+## Logical	vs.	Physical	Addressing	
+- Logical	addresses	
+  - Assumes	separate	memory starting	at	0	
+  - Compiler	generated	
+  - Independent	of	location	in	
+physical	memory	
+- Convert	logical	to	physical	
+  - Via	so[ware:	at	load	time	
+  - Via	hardware:	at	access	time
+
+![picture 3](images/6bbe34be821e303fc23102b3f26a4bf1a047afd7b0c541e47a24d439a19499eb.png)  
+
+## Hardware	for	Logical	Addressing
+- Base	register	filled	with start	address	
+- To	translate	logical	address,	add	base	
+- Achieves	relocation	
+- To	move	process:	change	base	
+![picture 4](images/5b94f5335f6592ca51754c3bd0301756baebf84a952e83f2c8b4c72f1f490269.png)  
+
+## Protection
+- Bound	register	works	with	base	register	
+- Is	address	<	bound	
+- Yes:	add	to	base	
+- No:	invalid	address,	TRAP	
+- Achieves	protection
+![picture 5](images/ecfb0aa2c81a12a59354f300b378ec09655070388a860d6dae49ebce51743aa3.png)  
+
+
+## Memory	Registers	Part	of	Context
+- On	Every	Context	Switch	
+  - Load	base/bound	registers	for	selected	process	
+  - Only	kernel	does	loading	of	these	registers	
+  - Kernel	must	be	protected	from	all	processes	
+- Benefit	
+  - Allows	each	process	to	be	separately	located	
+  - Protects	each	process	from	all	others	
+
+## Recall	Process	Address	Space
+- Text:	program	instructions	
+  - Execute-only,	fixed	size	
+- Data:	variables	(static,	heap)	
+  - Read/write,	variable	size	
+  - Dynamic	allocation	by	request	
+- Stack:	activation	records	(auto)	
+  - Read/write,	variable	size	
+  - Automatic	growth/shrinkage
+
+![picture 6](images/d3011186c5fc603d5b11c0f598813564e283585c8e303547b6f3d2232de95191.png)  
+
+## Fitting	Process	into	Memory
+- Must	find	large	enough	hole	
+- May	not	succeed	
+  - even	if	enough	fragment	space	
+- Even	if	successful,	inefficient	
+  - Space	must	be	allocated	for	potential	growth	areas
+- Solution:	break	process	into	pieces	
+  - Distribute	into	available	holes	
+![picture 7](images/de8032e8227d205420600d5ba5032aff7660ddc4e3847c0422e5c8043a12ed08.png)  
+
+## Two	Approaches
+- Segmented	address	space	
+  - Partion	into	segments	
+  - Segments	can	be	different	sizes	
+- Paged	address	space	
+  - Partion	into	pages	
+    - Corresponding	memory:	frames	
+  - Pages	are	the	same	size	
+![picture 8](images/d89870b2e2c375a6f954ff0911e6474c31a8c2b3548ad774e9dfbe9811554f6a.png)  
+
+## Segmented	Address	Space
+- Address	space	is	a	set	of	segments	
+- Segment:	a	linearly	addressed	memory	
+  - Typically	contains	logically-related	information	
+  - Examples:	program	code,	data,	stack	
+- Each	segment	has	an	identifier	s,	and	a	size	Ns	
+  - s	between	0	and	S-1,	S	=	max	number	of	segments	
+- Logical	addresses	are	of	the	form	(s,	i)	
+  - Offset	i	within	segment	s,	i	must	be	less	than	Ns
+
+## Example:	Segmented	Address	Space
+![picture 9](images/414b23fd066d2306c71f8f1180c7301b6a805a26b2111ef04f2f67478f41206f.png)  
+
+## Segment-based	Address	Translation	
+![picture 10](images/3b208c842117454717748c2655f92686b434518a0a52ca9d1e267831c0f965a8.png)  
+
+- Problem:	how	to	translate	
+  - a	logical	address	(s,	i)	into	physical	address	a?	
+- Solution:	use	a	segment	(translation)	table	ST	
+  - to	segment	s	into	base	physical	address	b	=	ST	(s)	
+  - then	add	b and	i
+- Summary:	physical	address	=	ST	(s)	+	i
+
+## Segment	Table
+- One	per	process	(typically)	
+- Table	entry	elements	
+  -  V:	valid	bit	
+  - Base:	segment	location	
+  - Bound:	segment	size	
+  - Perm:	permissions	
+- Location	in	memory	given	by	
+  - Segment	table	base	register	(hardware)	
+  - Segment	table	size	register	(hardware)	
+
+![picture 11](images/da4a7b8a4856f565e7ea21f488a8a839017e8a86acb07e4a5a1e2db76457ec8d.png)  
+
+## Address	Translation
+Physical	address	=	base	of	s	+	i
+• First,	do	a	series	of	checks
+
+### Check	if	Segment	s	is	within	Range	
+![picture 12](images/f512c9e2d725d155744b6295737a17998d3b04bf925c6af6f6e3981ab3910489.png)  
+
+### Check	if	Segment	Entry	s	is	Valid
+![picture 13](images/e0855b89f8f63ca13c4cec5e00cc5921f08f72eb3a0f4734ef0029bc2370cd32.png)  
+
+### Check	if	Offset	i	is	within	Bounds	
+![picture 14](images/4a5e8d542a25d61ed3f2c55dbe6e05433e07ef1fad3e51b449b3e027c99b732b.png)  
+
+### Check	if	Operation	is	Permioed	
+![picture 15](images/e7e19ec18df87618cf163e3e038a82038c6ad10ba9c4d04cfd0819a4206cfc83.png)  
+
+### Translate	Address	
+
+![picture 16](images/5ddef6427df4cd3e2691ac9e3ffa3597f886bbee147edd55a23b1293d4119001.png)  
+
+### Sizing	the	Segment	Table	
+
+![picture 17](images/6613a77a74da54546aaa2a8c0978b39b9aab23be593f7e83f535f24a885b20f0.png)  
+
+### Example	of	Sizing	the	Segment	Table	
+
+![picture 18](images/9be90204094741c30c117001c7212d175e5bdc33999a258a44dedb5e02aae339.png)  
+
+- Given	32	bit	logical,	1	GB	physical	memory	(max)	
+  - 5	bit	segment	number,	27	bit	offset	
+
+### Pros	and	Cons	of	Segmentation	
+
+- Pro:	Each	segment	can	be	
+  - located	independently	
+  - separately	protected	
+  - grown/shrunk	independently	
+  - Segments	can	be	shared	by	processes	
+- Con:	Variable-size	allocation	
+  - Difficult	to	find	holes	in	physical	memory	
+  - External	fragmentation	
+
+## Paged	Address	Space	
+- Logical	(process)	memory	
+  - Linear	sequence	of	pages	
+- Physical	memory	
+  - Linear	sequence	of	frames	
+- Pages	and	frames	
+  - Frame:	a	physical	unit	of	information	
+  - A	page	fits	exactly	into	a	frame	
+  - Fixed	size,	all	pages/frames	same	size
+
+![picture 1](images/05cf9fc1bd17a6f1676749376eb3ec3d839ebc0cd1502d4ecbc690168de01931.png)  
+
+## Page-based	Logical	Addressing
+- Form	of	logical	address:	(p,	i)	
+  - p	is	page	number,	0	to	NL-1	
+  - i	is	offset	within	page	
+  - Note:	i	is	less	than	page	size	
+    - no	need	to	check	
+- Size	of	logical	address	space	
+  - NL	=	max	number	of	pages	
+  - NL	×	page	size	=	size	of	logical	address	space
+
+![picture 2](images/5a19bf3341c34929202ef0c15927dd5ad781057e5cb9cbf6473f1ecac8ef6790.png)  
+
+## Frame-based	Physical	Addressing	
+- Form	of	physical	address:	(f,	i)	
+  - f	is	frame	number,	0	to	NP-1	
+  - i	is	offset	within	frame	
+  - Note:	i	is	less	than	frame	size	
+    - since	page	size	=	frame	size	
+- Size	of	physical	address	space	
+  - NP	=	max	number	of	frames	
+  - NP	×	frame	size	=	size	of	physical	address	space
+
+![picture 3](images/07b1e0af0c4cd324d729d1c6521581ea5726a28412cc234d78080ffd7fa25c66.png)  
+
+## Page-based	Address	Translation	
+- Problem:	how	to	translate	
+  - logical	address	(p,	i)	into	physical	address	(f,	i)?	
+- Solution:	use	a	page	(translation)	table	PT	
+  - to	translate	page	p	into	frame	f	=	PT	(p)	
+  - then	concatenate	f	and	i
+- Summary:	physical	address	=	PT	(p)		||		i
+
+
+![picture 4](images/52030a85921883f9340ab7302b7ea9599292ae906b233e9fa58d432d965002df.png)  
+
+## Logical	Pages	to	Physical	Frames	
+- Each	page	of	logical	memory	corresponds	to entry	in	page	table	
+- Page	table	“maps”	logical	page	into	frame	of	physical memory	
+![picture 5](images/55b640d70e6b90524daeceb4da9ef5138b87f65f91f83befcfb626195ba4acec.png)  
+
+## Page	Table
+- One	per	process	(typically)	
+- Table	entry	elements	
+  - V:	valid	bit	
+  - Demand	paging	bits	
+  - Frame:	page	location	
+- Location	in	memory	given	by	
+  - Page	table	base	register	(hardware)	
+  - Page	table	size	register	(hardware)
+
+![picture 6](images/9fe646a4e6d2d543440720bca75d03df14ead680987eacf378c83d08e2d800c9.png)  
+
+## Address	Translation
+- Physical address	=	frame	of	p ||	offset	i
+- First,	do	a	series	of	checks	
+![picture 7](images/49e81d752250e747639f22089f503ef76ac2921c955a12b2145ab816b77d7ae4.png)  
+
+### Check	if	Page	p	is	Within	Range	
+![picture 8](images/b5349eccee89d9feb17ced372ea4c2d8053af57cbb324aa982e6b5021462127b.png)  
+
+### Check	if	Page	Table	Entry	p	is	Valid
+![picture 9](images/e6f175888066e32b6cbd3fd333a70ad81c84c9ae38712ee62d318471a8173908.png)  
+
+### Check	if	Operation	is	Permioed	
+![picture 10](images/9e631c5dc40fd2c3311e8db396695b63bf1dad996e60d29e88ee9e02fdda2b75.png)  
+
+### Translate	Address	
+![picture 11](images/eba7c677ceee7db594debdc3dcb5846eda5d571d4623b94f3ed68630da96f555.png)  
+
+### Physical	Address	by	Concatenation
+![picture 12](images/8ec2af48d133c394ce4674cb342857bd71786d72cbb3220fdcfa9ae0e02f854d.png)  
+
+## Sizing	the	Page	Table	
+![picture 13](images/8ae6df3a0b1770442ad873c895c9d621b3d8d5d2e4b5e0b988b751c1358a0ec4.png)  
+
+## Example	of	Sizing	the	Page	Table
+![picture 14](images/c1d98efd8b049a3a56bf3b84344d6415a5cb593fc1615e4e382dcacd584f1cb8.png)  
+
+- Given	32	bit	logical,	1	GB	physical	memory	(max)	
+  - 20	bit	page	number,	12	bit	offset	
+
+## Segments	vs.	Pages	
+- Segment	is	good	“logical”	unit	of	information	
+  - Can	be	sized	to	fit	any	contents		
+  - Makes	sense	to	share	(e.g.,	code,	data)	
+  - Can	be	protected	according	to	contents	
+- Page	is	good	“physical”	unit	of	information	
+  - Simple	memory	management	
+- Why	not	have	best	of	both	
+  - Segments,	each	a	set	of	pages
+
+## Combining	Segments	and	Pages
+- Logical	memory	
+  - composed	of	segments	
+- Each	segment	
+  - composed	of	pages	
+- Segment	table	
+  - Maps	each	segment	to	a	page	table	
+- Page	tables	
+  - Maps	each	page	to	physical	page	frames	
+
+![picture 15](images/8b609023fb4a68d5551049d45e8bf8ea9fb21669424f2b3bf9d6901d7097eac8.png)  
+
+## Address	Translation
+- Logical	address:	[segment	s,	page	p,	offset	i]	
+- Do	various	checks	
+  - s	<	STSR,		V	==	1,	p	<	bound,	perm	(op)	
+  - May	get	a	segmentation	violation	
+- Use	s	to	index	segment	table	to	get	page	table	
+- Use	p	to	index	page	table	to	get	frame	f
+- Physical	address	=	concatenate	(f,	i)
+
+## Segment/Page	Address	Translation
+![picture 16](images/816b5f7e4235ebada2ab4c19b827734d05d60d3196a44e98ef0925b211152064.png)  
+
+## Cost	of	Translation
+- Each	lookup	costs	another	memory	reference	
+  - For	each	reference,	additional	references	required	
+  - Slows	machine	down	by	factor	of	2	or	more		
+- Take	advantage	of	locality	of	reference	
+  - Most	references	are	to	a	small	number	of	pages	
+  - Keep	translations	of	these	in	high-speed	memory	
+- Problem:	don’t	know	which	pages	till	accessed	
+
+## TLB:	Translation	Look-aside	Buffer
+![picture 17](images/8e8fd8f08dcbaec3ece491a6bffcbeeb3a583063cf7c6ca4a2355d4e07641613.png)  
+- Fast	memory	keeps	most	recent	translations	
+- If	key	matches,	get	frame	number	
+- else	wait	for	normal	translation	(in	parallel)	
+
+## Translation	Cost	with	TLB
+- Cost	is	determined	by	
+  - Speed	of	memory:	~	100	nsec
+  - Speed	of	TLB:	~	5	nsec
+  - Hit	ra6o:	frac6on	of	refs	satisfied	by	TLB,	~99%	
+- Speed	with	no	address	translation:	100	nsec
+- Speed	with	address	translation	
+  - TLB	miss: 200	nsec	(100%	slowdown)	
+  - TLB	hit: 105	nsec			(5%	slowdown)	
+  - Average: 105	x	0.99		+		200	x	0.01		≈		106	nsec
+
+## TLB	Design	Issues	
+- The	larger	the	TLB	
+  - the	higher	the	hit	rate	
+  - the	slower	the	response	
+  - the	greater	the	expense	
+- TLB	has	a	major	effect	on	performance!	
+  - Must	be	flushed	on	context	switches	
+  - Alternative:	tagging	entries	with	PIDs	
+
+
+# 	Virtual	Memory
+## Segments	and	Pages	
+- Structuring	memory	as	segments/pages	allows	
+  - partitioning	memory	for	convenient	allocation	
+  - reorganizing	memory	for	convenient	usage	
+- How?	
+  - Relocation	via	address	translation	
+  - Protection	via	matching	opera6ons	with	objects	
+- Result:	a	logically	organized	memory	
+
+## Implications
+- Not	all	pieces	need	to	be	in	memory	
+  - Need	only	piece	being	referenced	
+  - Other	pieces	can	be	on	disk	
+  - Bring	pieces	in	only	when	needed	
+- Illusion:	there	is	much	more	memory	
+- What’s	needed	to	support	this	idea?	
+  - A	way	to	identify	whether	a	piece	is	in	memory	
+  - A	way	to	bring	in	a	piece	(from	where,	to	where?)	
+  - Relocation	(address	translation,	which	we	have)	
+
+
+## Virtual	Memory	based	on	Paging
+![picture 1](images/9d229fbe87bff82e8fcd840779c92bf1af2f2253359125d7d82c70f33ad78da0.png)  
+
+- For	all	pages	in	virtual	memory	
+- All	of	them	reside	on	disk	
+- Some	also	reside	in	physical	memory	(which	ones?)
+
+
+## Sample	Contents	of	Page	Table	Entry
+![picture 2](images/685ea929ca76e4369d7676060969990229eb8fc0e0cf6d82839062084c9035f7.png)  
+
+- Valid:	is	entry	valid	(page	in	physical	memory)?	
+- Ref:	has	this	page	been	referenced	yet?	
+- Mod:	has	this	page	been	modified	(dirty)?	
+- Frame:	what	frame	is	this	page	in?	
+- Prot:	what	are	the	allowable	opera6ons?
+
+## Address	Translation	and	Page	Faults	
+- Get	entry:	index	page	table	with	page	number	
+- If	valid	bit	is	off,	page	fault	–	trap	into	kernel	
+  - Find	page	on	disk	(kept	in	kernel	data	structure)	
+  - Read	it	into	a	free	frame	
+    - may	need	to	make	room:	page	replacement	
+  - Record	frame	number	in	page	table	entry	
+  - Set	valid	bit	(and	other	fields)	
+- Retry	instruction	(return	from	page-fault	trap)
+
+## Faults	under	Segmentation/Paging
+- Virtual	address:	segment	s,	page	p,	offset	i
+- Use	s	to	index	segment	table	(gets	page	table)	
+  - May	get	a	segment	fault	
+- Check	bound	(Is	p	<	bound?)	
+  - May	get	a	segmentation	viola6on	
+- Use	p	to	index	into	page	table	(to	get	frame	f)	
+  - May	get	a	page	fault	
+- Physical	address:	concatenate	f	and	offset	i
+
+## Page	Faults	are	Expensive
+- Disk:	5-6	orders	magnitude	slower	than	RAM	
+  - Very	expensive;	but	if	very	rare,	tolerable	
+- Example	
+  - RAM	access	6me:	100	nsec
+  - Disk	access	6me:	10	msec
+  - p	=	page	fault	probability	
+  - Effec6ve	access	6me:	100		+		p	×	10,000,000	nsec
+  - If	p	=	0.1%,	effec6ve	access	6me	=	10,100	nsec	!	
+
+## Principle	of	Locality
+- Not	all	pieces	referenced	uniformly	over	6me	
+  - Make	sure	most	referenced	pieces	in	memory	
+  - If	not,	thrashing:	constant	fetching	of	pieces	
+- References	cluster	in	6me/space	
+  - Will	be	to	same	or	neighboring	areas	
+  - Allows	prediction	based	on	past
+
+## Page	Replacement	Policy
+- Goal:	remove	page	not	in	locality	of	reference	
+- Page	replacement	is	about	
+  - which	page(s)	to	remove	
+  - when	to	remove	them	
+- How	to	do	it	in	cheapest	way	possible,	with	
+  - least	amount	of	additional	hardware	
+  - least	amount	of	software	overhead	
+
+## Basic	Page	Replacement	Algorithms
+- FIFO:	select	page	that	is	oldest	
+  - Simple:	use	frame	ordering	
+  - Doesn’t	perform	very	well	(oldest	may	be	popular)	
+- OPT:	select	page	to	be	used	furthest	in	future	
+  - Op6mal,	but	requires	future	knowledge	
+  - Establishes	best	case,	good	for	comparisons	
+- LRU:	select	page	that	was	least	recently	used	
+  - Predict	future	based	on	past;	works	given	locality	
+  - Costly:	6me-stamp	pages	each	access,	find	least	
+
+## Reference	String
+![picture 3](images/07b9a7853353b45c1e8c853da701ddbb0dae9f3b9b8d3a220210cbd837e7d34f.png)  
+
+- Reference	string:	sequence	of	page	references	
+- Page	reference:	page	of	logical/virtual	address	
+
+## FIFO:	First	In	First	Out
+![picture 4](images/67433632fbff667ee3d9f3ab1195aaeb9799abe9b5951d3272e31ab204e501a5.png)  
+
+- Arrow	è	always	points	to	next	frame	to	fill	
+- For	FIFO,	this	is	always	frame	with	oldest	page	
+- But,	is	oldest	page	the	best	page	to	remove?
+
+## Summary	of	FIFO	
+![picture 5](images/7f5666194a00953ca019fcddf723c025a6e26bf74e26930f59813f94a816af7c.png)  
+
+- FIFO	incurs	9	page	faults	(5	are	obligatory)	
+- FIFO	is	simple	to	implement	
+  - Just	keep	pointer	to	next	frame	aser	last	loaded	
+- But,	removing	oldest	page	not	generally	best	
+  - Old	does	not	imply	useless;	may	s6ll	be	in	demand
+
+## OPT:	Op6mal	Page	Replacement	
+- Op6mal:	replace	page	that	will	be	accessed furthest	in	future	(arrow	è points	to	frame)	
+![picture 6](images/395067bb30188816cf171d8c8e17ba01d28b7913641b1ba31fffe9537628284d.png)  
+
+- OPT	incurs	6	page	faults,	1	beyond	obligatory	
+  - This	is	the	minimal	number	possible	
+- OPT	is	op6mal,	but	not	realistic	
+  - Requires	predicting	the	future	
+  - Useful	as	a	benchmark	
+
+## FIFO	vs.	OPT
+-  OPT	does	much	better	than	FIFO	
+
+
+## LRU:	Least	Recently	Used	
+- Replace	page	that	was	least	recently	used	
+  - LRU	means	used	furthest	in	the	past	
+- Takes	advantage	of	locality	of	reference	
+- Must	have	some	way	of	tracking	LRU	page
+
+## LRU	Example	
+![picture 1](images/fe63f1748b0f43a063e6520c381f4e593ac3462197dea8a904b9b468bfa4de4b.png)  
+
+- LRU	incurs	7	page	faults,	2	beyond	obligatory	
+- Performs	well,	but	only	if	there	is	locality	
+- Complex,	requires	hardware	support	
+  - To	keep	track	of	frame	with	LRU	page	
+
+## FIFO	vs.	OPT	vs.	LRU
+![picture 2](images/bcc3b3dd7e7bcfeddbbcdbde2f43201f302f946fe7cff7f5599da4133c6d5ef8.png)  
+
+- OPT	≥	LRU	(assuming	locality)	≳	FIFO	
+
+## Approximating	LRU:	Clock	Algorithm
+- Select	page	that	is	old	and	not	recently	used	
+  - Clock	(second	chance)	is	approximation	of	LRU	
+- Hardware	support:	reference	bit	
+  - Associated	with	each	frame	is	a	reference	bit	
+  - Actually,	reference	bit	is	in	page	table	entry	
+- How	reference	bit	is	used	
+  - When	frame	filled	with	page,	set	bit	to	0	(by	OS)	
+  - If	frame	is	accessed,	set	bit	to	1	(by	hardware)	
+
+## How Clock Works
+- Arrange	all	frames	in	circle	(clock)	
+- Clock	hand:	next	frame	to	consider		
+- Page	fault:	find	frame	
+  - If	ref	bit	0,	select	frame	
+  - Else,	set	ref	bit	to	0	
+  - Advance	clock	hand	
+  - If	frame	found,	break	out	of	loop	(else	repeat)	
+- If	frame	had	modified	page,	must	write	to	disk	
+
+![picture 1](images/ed56f4a9f8adfec3f8e45ba43ece46b7c9d9f227e4fade4a9eba05de92f592fb.png)  
+
+## example of clock
+![picture 2](images/1811d23a04710a633ed39a8c21b9e7cbeecc8fcc84cc194b2b2847b2dc7321de.png)  
+
+## Resident	Set	Management
+- Resident	set:	process’s	pages	in	physical	memory	
+  - How	big	should	resident	set	be?		Which	pages?	
+  - Who	provides	frame	(same	process	or	another)?	
+- Local:	limit	frame	selection	to	requesting	process	
+  - Isolates	effects	of	page	behavior	on	processes	
+  - Inefficient:	some	processes	have	unused	frames	
+- Global:	select	any	frame	(from	any	process)	
+  - Efficient:	resident	sets	grow/shrink	accordingly	
+  - No	isolation:	process	can	negatively	affect	another	
+
+## Multiprogramming	Level
+![picture 3](images/35bb5e81167e5de029f3581f7911376d066772db1de2a48b43b46fa67f994e1c.png)  
+
+- Multiprogramming	level:	number	of	processes	 in	physical	memory	(non-empty	resident	sets)	
+- Goal:	increase	mul6programming	level	–	how?	
+- However,	beyond	certain	point:	thrashing	
+- Resident	set	should	contain	the	working	set
+
+## Denning’s	Working	Set	Model
+![picture 4](images/2212b3fac0060680397ff85ac7b2523e97824ba6800923e847a98b5891d4b2af.png)  
+
+- Working	set:	W(t,	∆)	
+  - Pages	referenced	during	last	delta	(process	6me)	
+- Process	given	frames	to	hold	working	set	
+- Add/remove	pages	according	to	W(t,	∆)	
+- If	working	set	doesn’t	fit,	swap	process	out
+- Working	set	is	a	local	replacement	policy	
+  - Process’s	page	fault	behavior	doesn’t	affect	others	
+- Problem:	difficult	to	implement	
+  - Must	timestamp	pages	in	working	set	
+  - Must	determine	if	timestamp	older	than	t	-	∆	
+  - How	should	∆	be	determined?	
+- Contrast	to	Clock	
+- Clock:	simple,	easy	to	implement,	global	policy	
+
+# File	System
+## What	is	a	File?	File	System?
+![picture 1](images/9036b50d7d5785a0a7e1b24f5ca9f2461400ff7b0c60036f476e6c5f7a02c355.png)  
+
+- File:	logical	unit	of	storage,	container	of	data	
+  - Accessed	by	< name,	region	within	file>	
+- File	System:	a	structured	collection	of	files	
+  - Access	control,	name	space,	persistent	storage	
+
+
+## File	System	Abstraction
+- Repository	of	objects	
+  - Objects	are	data,	programs,	for	system,	users	
+  - Objects	referenced	by	name,	to	be	read/wriUen	
+- Persistent:	remains	“forever”	
+- Large:	“unlimited”	size	
+- Sharing:	controlled	access	
+- Security:	protecting	information	
+
+## More	than	a	Repository
+- Any/all	objects	where	following	make	sense	
+  - Accessed	by	name	
+  - Can	be	read	and/or	wriUen	
+  - Can	be	protected:	read-only,	read-write,	…	
+  - Can	be	shared	
+  - Can	be	locked	
+- I/O	devices:	disk,	keyboard,	display,	…	
+- Processes:	memory
+
+## Hierarchical	File	Name	Space	
+- Name	space	is	organized	as	a	tree	
+- Name	has	components,	branches	start	from	root	
+- No	size	restrictions	
+- Intuitive	for	users	
+- Example:	UNIX	“pathnames”	
+- Absolute:	/a/b/c
+- Relative:	b/c	relative	to	/a	
+- Not	strictly	a	tree:	links	
+
+![picture 2](images/612093724c9024f67a493100b81c45a9f0f782018a24ccad3a458e719676ff26.png)  
+
+## A	File	Has	Attributes	
+- Type	(recognized	by	system	or	users)	
+- Times:	creation,	accessed,	modified	
+- Sizes:	current	size,	maximum	size	
+- Access	control	(permissions)	
+
+## File	Operations
+- Creation:	create,	delete	
+- Prepare	for	access:	open,	close,	mmap
+- Access:	read,	write	
+- Search:	move	to	location	
+- Attributes:	get,	set	(e.g.,	permissions)	
+- Mutual	exclusion:	lock,	unlock	
+- Name	management:	rename	
+
+## Read/Write	Model
+- fd	=	open	(fname,	mode)	
+- nr	=	read	(fd,	buf,	size)	
+- nw	=	write	(fd,	buf,	size)	
+- close	(fd)	
+
+![picture 1](images/16fbb88abd696214757326c95fdcc8f3770353dcbf56e0d01ea23532bd1cdbf1.png)  
+
+## Memory-mapped	Model
+- Map	file	into	address	space	
+  - mmap	(fd,	addr,	n);	
+  - addr	=	mmap	(fd,	NULL,	n);	
+- Can	then	use	memory	ops	
+  - x	=	addr[5];	strcpy	(addr,	“hello”);	
+- Issues	
+  - Efficient	for	mul6ple	processes	sharing	memory	
+  - If	memory	is	wriUen,	how	is	file	actually	updated?
+
+![picture 2](images/f5282bff1e7e5a6186ba6185da001239ec09c7958a39aa881278c57927f2b058.png)  
+
+## Access	Control	
+- How	are	files	shared,	to	varying	degrees?	
+- Access	control	
+  - Who	can	access	file	
+  - What	opera6ons	are	allowed	
+  - User	interface	must	be	simple	and	intuitive	
+- Example:	UNIX	
+  - r/w/x	permissions	for	owner,	group,	and	everyone
+
+
+## File	System	Implementation:	Goals
+- Archival	storage	
+  - Keep	forever,	including	previous	versions	
+- Support	various	storage	technologies	
+  - Disks	(different	types),	remote	disks,	…	
+- How	to	best	achieve	and	balance	
+  - Performance	
+  - Reliability	
+  - Security
+
+## Storage	Abstraction	
+- Hide	complexity	of	device	
+  - Model	as	array	of	blocks	of	data	
+  - Randomly	addressable	by	block	number	
+  - Typical	block	size:	1KB	(also	4KB-64KB)	
+    - Generally	multiple	of	disk	sector	size:	512B	
+- Simple	interface	
+  - read	(block_num,	mem_addr)	
+  - write	(block_num,	mem_addr)	
+
+![picture 3](images/2b71bcb8f4a4cd312123048c6a9b4313ed1bd4f0833b55e7ff75869c7c277a2a.png)  
+
+## Typical	Implementation	Structure
+- Three	major	regions	
+  - Sequence	of	blocks	for	each	one	
+- Region	1:	File	System	Metadata	
+  - Information	about	file	system	
+- Region	2:	File	Metadata	
+  - File	control	blocks	
+- Region	3:	Data	Blocks	
+  - File	contents	
+
+
+##  File	System	Metadata
+- Information	about	the	file	system	
+- Sizes	
+  - Files	in	use,	free	entries	
+  - Data	blocks	in	use,	free	entries	
+- Free	lists	(or	bitmaps)	
+  - File	control	blocks	
+  - Data	blocks	
+
+## File	Metadata:	File	Control	Blocks
+- Information	about	a	file	
+- Referenced	by	number/index	
+- Contains	
+  - Attributes	
+    - type	of	file,	size,	permissions,	…	
+  - References	to	data	blocks	
+    - disk	block	map	
+- Note:	many	file	control	blocks may	fit	in	single	storage	block
+![picture 4](images/360755dda49911b1d734900fd35a9268a30887ee25ae80fec2523f834b313ac8.png)  
+

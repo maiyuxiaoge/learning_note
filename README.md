@@ -10,3 +10,4 @@
 - leetcode(周赛思路随笔)
 - java基础(java随笔)
 - html&css,jQuery,javascript(尚硅谷)
+- linux(鸟哥的linux私房菜)
