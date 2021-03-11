@@ -1721,3 +1721,136 @@ Physical	address	=	base	of	s	+	i
 - Note:	many	file	control	blocks may	fit	in	single	storage	block
 ![picture 4](images/360755dda49911b1d734900fd35a9268a30887ee25ae80fec2523f834b313ac8.png)  
 
+## Keeping	Track	of	Allocated	Blocks
+- Contiguous	blocks	
+  - Single	sequence	of	blocks	
+- Extents	
+  - Groups	of	contiguous	blocks	
+- Non-contiguous	blocks	
+  - Blocks	individually	named
+
+![picture 1](images/35e94a0220566db0ced8e9e98ab1860f05ce2884f2812e15180be21b1d1ff5cb.png)  
+
+## Example:	UNIX	v.7	Block	Map	
+- Array	of	pointers	to	data	blocks	
+- 13	pointers	
+  - 10	direct:	references	10	data	blocks	
+  - 1	singly-indirect:	references	n	data	blocks	
+  - 1	doubly-indirect:	references	n2	data	blocks	
+  - 1	triply-indirect:	references	n3	data	blocks	
+- n	depends	on	how	many	pointers	fit	in	a	block	
+  - Example:	256	4-byte	pointers	will	fit	in	1KB	block	
+
+![picture 2](images/fe3eb42129bf77e2dc99b8ebd19aa9cea3a6f4efdfc56e528c6a2932985ec7e8.png)  
+
+## Keeping	Track	of	Free	Blocks	
+- Free	Block	Map	
+  - Compact	if	lots	of	free regions	of	space	
+- Doubly	Linked	List	
+  - Easy	to	keep	ordered	due	to	fast	inserts	and	deletes	
+- Bit	Map	
+  - Fixed	size	regardless	of	fragmentation	
+![picture 3](images/de41aa26415159c8393fbef2d8509ee2ce01462007881507a4933190b2ae07a1.png)  
+
+## File	Name	to	File	Control	Block
+- Users	access	files	using	file	names	
+- Problem:	how	to	translate	
+  - from	file	name:	“/sports/baseball/Padres”	
+  - to	file	control	block	number:	88	
+- Must	parse	file	name	
+- Each	branch	corresponds	to	a	directory/folder	
+- Each	directory/folder	may	itself	be	a	file
+
+## Implementing	UNIX	Directories	
+- Table	where	each	entry	contains	
+  - name	and	attributes	
+  - name	and	pointer	to	file	control	structure	
+- Unix	(name	and	pointer)	–	pre-BSD	
+  - Each	entry:	branch	name	(14),	i-node	number	(2)	
+  - Berkeley	Unix	uses	a	more	complex	scheme	to	support	long	names	
+
+
+## Example	of	Parsing	Names	in	UNIX
+![picture 4](images/c9b7d7eee4a4064bedc0f23d157d2f0914230cc0ffd1f86b992f552fd145087f.png)  
+
+- Given	pathname:	/sports/baseball/Padres	
+  - Inode	0	block	map	points	to	data	block(s)	of	root	directory	
+  - Look	up	“sports”	in	root	directory	to	get	inode	22	
+  - Inode	22	block	map	points	to	data	block(s)	of	sports	directory	
+  - Look	up	“baseball”	in	sports	directory	to	get	inode	15	
+
+## The	Big	Picture
+![picture 5](images/39262a4c960085c8849017842c24bf2597ba4e63fb675be5ce43ce4dc7a3dd04.png)  
+
+## File	Systems	Use	Disks	for	Storage
+![picture 6](images/f67a7e6b6758ad06c580c859e3e3da4576f39d42da27caff3dc4c670bf8ad6ad.png)  
+- Why	disks:	persistent,	random	access,	cheap	
+- But,	disks	are	slow,	because	they	are	mechanical
+
+## File	System	Performance
+- Disk	accesses	are	6me	expensive:	5-20	msec!	
+- Rotational	latency:	2-6	msec	(5400-15000	RPM)	
+- Seek	6me:	3-13	msec
+- Transfer	rate:	100+	MB/sec	
+- Reduce	accesses	by	
+- reading	mul6ple	blocks	in	one	access	(read	ahead)	
+- maintaining	a	block	cache	
+- Cluster	related	blocks	to	reduce	seek	6me	
+
+## Solid	State	Drives	(SSD)	
+- NAND-based	flash	memory,	non-volatile	
+- Unaffected	by	shock,	magnetic	fields;	no	noise	
+- Limited	number	of	writes,	wears	out	with	age	
+
+|Attribute|Solid	State	Drive|Hard	Disk	Drive|SDD	vs	HDD	|
+|  :---:  | :---:  | :---:  | :---:  |
+|Access	time|0.1	msec|10	msec|**	100x	**	|
+|Throughput|500	MB/sec| 100	MB/sec|5x	|
+|Power|<	2	waUs|5-6	waUs|1/2x	|
+|Capacity|64	GB	–	1	TB|500	GB	–	8	TB|1/10x	|
+|Cost|$50-100	for	100	GB|$5-10	for	100	GB|10x	|
+
+## Performance:	Caching	
+- Data	blocks	of	files	
+- File	system	metadata	(keep	in	memory)	
+- File	metadata	
+  - Currently	ac6ve	files	
+  - Recently	used	
+- Block	maps	
+- File	names	
+  - Name	to	file	metadata	translations
+
+## Performance:	Clustering	
+- Blocks	that	exhibit	locality	of	reference	
+  - Directory,	and	files	within	that	directory	
+  - The	inodes	of	the	directory	and	files	
+- Strategy	
+  - Place	related	blocks	close	to	each	other:	clustering	
+  - Reduces	disk	head	movement,	and	thus	seek	time
+
+## Performance:	Block	Size	
+- What	should	the	block	size	be?	
+  - The	larger	the	block,	the	beUer	the	throughput	
+  - The	smaller	the	block,	the	less	wasted	space	
+- Technology	trends	
+  - Disk	density	is	increasing	faster	than	disk	speed	
+  - Make	disk	blocks	larger:	1	KB	→	8	KB,	64	KB,	1	MB
+
+## Reliability:	Consistency	
+- Buffer	cache	reduces	disk	accesses	
+- But	if	system	crashes,	block	modifications	lost	
+- To	improve	file	system	consistency	
+- Write	out	modified	blocks	(how	o|en?)	
+- Write	out	cri6cal	blocks	(write-through)	
+- Critical	blocks:	file	system	meta-data	
+- Directories,	i-nodes,	free	block	lists	
+
+## Reliability:	Journaling
+- Journal:	log	of	file	(or	file	system)	updates	
+- For	every	update,	create	log	entry	
+- Write	log	entry	out	to	disk	(part	of	journal)	
+- If	there	is	a	crash	
+  - Look	at	journal	entries	
+  - Check	if	mods	properly	reflected	in	file	system	
+  - Update	appropriately	
+
