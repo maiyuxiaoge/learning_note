@@ -1,12 +1,5 @@
-# way to solve problem
-1. A way to gather user input.
-2. Understand (parse, model)...
-3. Tokenize the input, recognize keywords
-4. Articulate the problem space (commands)
-5. Generate some output
-6. Provide error messages
-
-MVC -- Model View Controller
+[toc]
+# MVC -- Model View Controller
 
 # Variables
 1. MONAD
@@ -30,7 +23,7 @@ char value = 'a';
 enum basic {first = 10,second, third}
 ```
 - c++ enums
-```
+```c++
 class enum improved : char {first = 'a', second = 'b', third = 'c'}
 ```
 5. AUTO
@@ -124,48 +117,37 @@ class Foo{
 }
 ```
 
-# The object AHA
-1. class based modeling and inheritance
-   1. a class is a blueprint that describes object structure and behavior
-   2. each object is an instance - built from the blueprint
-   3. classes combine data and methods into a useful abstract model
-   4. Methods are functions associated with the class, shared with all of the objects of that class type, to describe and define object behavior
-2. encapsulation
-   1. permits us hide our implementation details from our users, so that they rely on the services we provide rather than the means by which we provide them.
-   2. the primary benefit is that we are free to change our implementation without our users having to change their dependent logic.
-3. dynamic message passing
-   1. allow one object to request service from another object at any time.
-4. polymorphism
-   1. compile-time
-     ```c++
-     int max(int arg1,int arg2){return arg1<arg2? arg2:arg1;}
-     float max(float arg1,float arg2){return arg1<arg2? arg2:arg1;}
-     int main(){
-         float f1{3.14};
-         float f2{6.28};
-         float f3 = max(f1,f2);
-     }
-     ```
-   2. run-time
-   ```cpp
-   struct Foo{
-       virtual void doSomething(){
-           cout << "i am a foo";
-       }
-   }
-    struct Bar{
-       virtual void doSomething(){
-           cout << "i am a Bar";
-       }
-   }
+# polymorphism
+ 1. compile-time
+   ```c++
+   int max(int arg1,int arg2){return arg1<arg2? arg2:arg1;}
+   float max(float arg1,float arg2){return arg1<arg2? arg2:arg1;}
    int main(){
-       Foo* theFoo = new Bar;
-       theFoo -> doSomething();
+       float f1{3.14};
+       float f2{6.28};
+       float f3 = max(f1,f2);
    }
    ```
-   3. run-time with custom dispatch
-   4. fully-dynamic
-5. open recursion
+ 2. run-time
+ ```cpp
+ struct Foo{
+     virtual void doSomething(){
+         cout << "i am a foo";
+     }
+ }
+  struct Bar{
+     virtual void doSomething(){
+         cout << "i am a Bar";
+     }
+ }
+ int main(){
+     Foo* theFoo = new Bar;
+     theFoo -> doSomething();
+ }
+ ```
+ 3. run-time with custom dispatch
+ 4. fully-dynamic
+
 
 # operator overloading
 1. Arithmetic $\left(+,,{ }^{\star}, l, \% \ldots\right)$
@@ -220,7 +202,7 @@ int main(){
 ## in cpp
 - static_cast: a type-safe version of type-casting
 ```cpp
-Cstruct A{};
+struct A{};
 struct B{};
 struct C: public A{};
 int main(){
@@ -273,24 +255,6 @@ int main(){
 ```
 ## template class
 
-# STL
-1. container
-   1. sequence
-      1. vector
-      2. deque
-      3. forward-list and list
-      4. array
-      5. stack
-      6. queue
-      7. priority-queue
-   2. associative
-      1. set
-      2. map
-2. iterators
-3. algorithm
-4. functors
-
-
 # functor
 - without functor
 ```cpp
@@ -331,3 +295,244 @@ int main(){
     cout << theFunctor.getValue() << endl;
 }
 ```
+# RAII
+- resource acquisition is initialization
+- 利用c++构造的对象最终会被销毁的原则
+- RAII的做法是使用一个对象，在其构造时获取对应的资源，在对象生命期内控制对资源的访问，使之始终保持有效，最后在对象析构的时候，释放构造时获取的资源
+- 理解： 在destructor 中释放资源 如 fd.close(), delete p
+
+```cpp
+class BufferManager{
+public:
+    BufferManager(size_t aPreSize = 0){
+        if (aPreSize) buffer = new char[aPreSize];
+
+    }
+    ~BufferManager(){delete buffer;}
+}
+```
+
+# efficiency
+1. time efficiency
+2. space efficiency
+3. cognitive efficiency
+4. testing efficiency
+
+# partial template specialization
+- 部分模板特化
+## 问题提出：
+- 实现json的写入
+
+## 解决方法一：
+```cpp
+class Foo{
+    Foo& toJSON(std:stream &anOutput){
+        anOutput << "id" << "\"" << ":" << id << "\n";
+        anOutput << "amount" << "\"" << ":" << amount << "\n";
+        anOutput << "name" << "\"" << ":" << name << "\n";
+    }
+}
+
+```
+
+## 解决方法二：
+```cpp
+class JSONWriter{
+    public:
+    JSONWriter& writeInt(const int &aValue);
+    JSONWriter& writeFloat(const float &aValue);
+    JSONWriter& writeBool(const bool &aValue);
+    JSONWriter& writeString(const std::string &aValue);
+}
+```
+
+## 解决方法三：
+```cpp
+class JSONWriter{
+    public:
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const int &aValue);
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const float &aValue);
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const bool &aValue);
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const std::string &aValue);
+}
+```
+
+## 解决方法四：
+```cpp
+class JSONWriter{
+    public:
+    template<typename T>
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const T &aValue);
+
+    template<>
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const bool &aValue);
+
+    template<>
+    JSONWriter& writeKeyValue(const std::string &aValue,aKey,const std::string &aValue);
+    private:
+    std::stream &output;
+}
+```
+
+#  friend
+- 友元函数和友元类
+- 友元函数内部可以访问该类对象的私有成员
+```cpp
+class CCar;  
+class CDriver
+{
+public:
+    void ModifyCar(CCar* pCar);  //改装汽车
+};
+class CCar
+{
+private:
+    int price;
+    friend int MostExpensiveCar(CCar cars[], int total);  
+    friend void CDriver::ModifyCar(CCar* pCar);  
+};
+```
+
+- 友元类的所有成员函数都可以访问对方对象的私有成员
+```cpp
+class CCar
+{
+private:
+    int price;
+    friend class CDriver;  
+};
+class CDriver
+{
+public:
+    CCar myCar;
+    void ModifyCar()  
+    {
+        myCar.price += 1000;  
+    }
+};
+
+```
+
+# CRTP (奇异的递归模板模式)
+1. 继承自模板类。
+2. 派生类将自身作为参数传给模板类
+
+```cpp
+template <typename T>
+class Base
+{
+public:
+    void doSomething()
+    {
+        T& derived = static_cast<T&>(*this);
+    }
+};
+
+class Derived : public Base<Derived>
+{
+public:
+    void doSomething()
+    {
+         std::cout << " Derived class " << std::endl;
+    }  
+};
+```
+
+- 作用： 
+  - 通过static_cast 把基类转化为派生类，实现基类对象对派生对象的访问
+  - 多态是个很好的特性，但是动态绑定比较慢，因为要查虚函数表。而使用 CRTP，完全消除了动态绑定，降低了继承带来的虚函数表查询开销。
+  - 具体应用： https://zhuanlan.zhihu.com/p/137879448
+
+# mixin
+- Template Parameters as Base Classes
+## 问题提出
+```
+class DerivePrint1 : public BasePrint
+{
+public :
+    virtual void myprint() {
+        cout<<"Hello World 1!"<<endl;
+    }
+    virtual void print() {
+        myprint();
+    }
+};
+
+class DerivePrint2 : public BasePrint
+{
+public :
+    virtual void myprint() {
+        cout<<"Hello World 2!"<<endl;
+    }
+    virtual void print() {
+        myprint();
+    }
+};
+
+class myClass:public DerivePrint1,public DerivePrint2{
+};
+
+int main()
+{
+    myClass my;
+    // error，触发了多重继承的问题
+    my.print();
+}
+```
+- print 定义不清晰
+
+## mixin解决方法
+```
+template <typename T>
+class DerivePrint1 : public T
+{
+public :
+    void print() {
+        cout<<"Hello World 1!"<<endl;
+        T::print();
+    }
+};
+
+template <typename T>
+class DerivePrint2 : public T
+{
+public :
+    void print() {
+        cout<<"Hello World 2!"<<endl;
+        T::print();
+    }
+};
+
+class myClass{
+public:
+    void print(){
+        cout<<"myClass"<<endl;
+    }
+};
+
+```
+# code smell
+1. Bloaters: over-engineering
+   1. overly long method
+   2. excessively long argument lists
+   3. over-engineered primitives
+2. oop abuse
+   1. unnecessary switch statements
+   2. poorly factored methods
+   3. temporary fields
+   4. poor inheritance design
+   5. class alternatives with varying interfaces
+3. ice-age
+   1. change preventers are practices is make changing code more difficult,time-consuming or expense.
+4. dispensables
+   1. lazy classes
+   2. duplicate code
+   3. dead code
+5. anti-social network
+   1. unnecessary coupling or dependencies
+   2. middle man
+   3. message chains
+   4. overly dependent hierarchies
+
+
+- 参考资料： https://refactoring.guru/refactoring/smells

@@ -82,7 +82,7 @@
 ## process stack
 - Stack	of	activation	records	
   - One	per	pending	procedure	
-- An	acitvation	record	may	store	
+- An	activation	record	may	store	
   - where	to	return	to	
   - link	to	previous	record	
   - automatic	(local)	variables	
@@ -1066,7 +1066,7 @@ coalesce
   - Independent	of	location	in	
 physical	memory	
 - Convert	logical	to	physical	
-  - Via	so[ware:	at	load	time	
+  - Via	software:	at	load	time	
   - Via	hardware:	at	access	time
 
 ![picture 3](images/6bbe34be821e303fc23102b3f26a4bf1a047afd7b0c541e47a24d439a19499eb.png)  
@@ -1075,7 +1075,9 @@ physical	memory
 - Base	register	filled	with start	address	
 - To	translate	logical	address,	add	base	
 - Achieves	relocation	
-- To	move	process:	change	base	
+- To	move	process:	change	base
+
+
 ![picture 4](images/5b94f5335f6592ca51754c3bd0301756baebf84a952e83f2c8b4c72f1f490269.png)  
 
 ## Protection
@@ -1116,6 +1118,8 @@ physical	memory
   - Space	must	be	allocated	for	potential	growth	areas
 - Solution:	break	process	into	pieces	
   - Distribute	into	available	holes	
+
+
 ![picture 7](images/de8032e8227d205420600d5ba5032aff7660ddc4e3847c0422e5c8043a12ed08.png)  
 
 ## Two	Approaches
@@ -1126,6 +1130,8 @@ physical	memory
   - Partion	into	pages	
     - Corresponding	memory:	frames	
   - Pages	are	the	same	size	
+
+
 ![picture 8](images/d89870b2e2c375a6f954ff0911e6474c31a8c2b3548ad774e9dfbe9811554f6a.png)  
 
 ## Segmented	Address	Space
@@ -1352,7 +1358,7 @@ Physical	address	=	base	of	s	+	i
 - Cost	is	determined	by	
   - Speed	of	memory:	~	100	nsec
   - Speed	of	TLB:	~	5	nsec
-  - Hit	ra6o:	frac6on	of	refs	satisfied	by	TLB,	~99%	
+  - Hit	ratio:	frac6on	of	refs	satisfied	by	TLB,	~99%	
 - Speed	with	no	address	translation:	100	nsec
 - Speed	with	address	translation	
   - TLB	miss: 200	nsec	(100%	slowdown)	
@@ -1376,7 +1382,7 @@ Physical	address	=	base	of	s	+	i
   - reorganizing	memory	for	convenient	usage	
 - How?	
   - Relocation	via	address	translation	
-  - Protection	via	matching	opera6ons	with	objects	
+  - Protection	via	matching	operations	with	objects	
 - Result:	a	logically	organized	memory	
 
 ## Implications
@@ -1391,8 +1397,7 @@ Physical	address	=	base	of	s	+	i
   - Relocation	(address	translation,	which	we	have)	
 
 
-## Virtual	Memory	based	on	Paging
-![picture 1](images/9d229fbe87bff82e8fcd840779c92bf1af2f2253359125d7d82c70f33ad78da0.png)  
+## Virtual	Memory	based	on	Paging 
 
 - For	all	pages	in	virtual	memory	
 - All	of	them	reside	on	disk	
@@ -1406,7 +1411,7 @@ Physical	address	=	base	of	s	+	i
 - Ref:	has	this	page	been	referenced	yet?	
 - Mod:	has	this	page	been	modified	(dirty)?	
 - Frame:	what	frame	is	this	page	in?	
-- Prot:	what	are	the	allowable	opera6ons?
+- Prot:	what	are	the	allowable	operations?
 
 ## Address	Translation	and	Page	Faults	
 - Get	entry:	index	page	table	with	page	number	
@@ -1423,7 +1428,7 @@ Physical	address	=	base	of	s	+	i
 - Use	s	to	index	segment	table	(gets	page	table)	
   - May	get	a	segment	fault	
 - Check	bound	(Is	p	<	bound?)	
-  - May	get	a	segmentation	viola6on	
+  - May	get	a	segmentation	violation	
 - Use	p	to	index	into	page	table	(to	get	frame	f)	
   - May	get	a	page	fault	
 - Physical	address:	concatenate	f	and	offset	i
@@ -1432,17 +1437,17 @@ Physical	address	=	base	of	s	+	i
 - Disk:	5-6	orders	magnitude	slower	than	RAM	
   - Very	expensive;	but	if	very	rare,	tolerable	
 - Example	
-  - RAM	access	6me:	100	nsec
-  - Disk	access	6me:	10	msec
+  - RAM	access	time:	100	nsec
+  - Disk	access	time:	10	msec
   - p	=	page	fault	probability	
-  - Effec6ve	access	6me:	100		+		p	×	10,000,000	nsec
-  - If	p	=	0.1%,	effec6ve	access	6me	=	10,100	nsec	!	
+  - Effective	access	time:	100		+		p	×	10,000,000	nsec
+  - If	p	=	0.1%,	effective	access	time	=	10,100	nsec	!	
 
 ## Principle	of	Locality
-- Not	all	pieces	referenced	uniformly	over	6me	
+- Not	all	pieces	referenced	uniformly	over	time	
   - Make	sure	most	referenced	pieces	in	memory	
   - If	not,	thrashing:	constant	fetching	of	pieces	
-- References	cluster	in	6me/space	
+- References	cluster	in	time/space	
   - Will	be	to	same	or	neighboring	areas	
   - Allows	prediction	based	on	past
 
@@ -1460,11 +1465,11 @@ Physical	address	=	base	of	s	+	i
   - Simple:	use	frame	ordering	
   - Doesn’t	perform	very	well	(oldest	may	be	popular)	
 - OPT:	select	page	to	be	used	furthest	in	future	
-  - Op6mal,	but	requires	future	knowledge	
+  - Optimal,	but	requires	future	knowledge	
   - Establishes	best	case,	good	for	comparisons	
 - LRU:	select	page	that	was	least	recently	used	
   - Predict	future	based	on	past;	works	given	locality	
-  - Costly:	6me-stamp	pages	each	access,	find	least	
+  - Costly:	time-stamp	pages	each	access,	find	least	
 
 ## Reference	String
 ![picture 3](images/07b9a7853353b45c1e8c853da701ddbb0dae9f3b9b8d3a220210cbd837e7d34f.png)  
@@ -1486,15 +1491,15 @@ Physical	address	=	base	of	s	+	i
 - FIFO	is	simple	to	implement	
   - Just	keep	pointer	to	next	frame	aser	last	loaded	
 - But,	removing	oldest	page	not	generally	best	
-  - Old	does	not	imply	useless;	may	s6ll	be	in	demand
+  - Old	does	not	imply	useless;	may	still	be	in	demand
 
-## OPT:	Op6mal	Page	Replacement	
-- Op6mal:	replace	page	that	will	be	accessed furthest	in	future	(arrow	è points	to	frame)	
+## OPT:	Optimal	Page	Replacement	
+- Optimal:	replace	page	that	will	be	accessed furthest	in	future	(arrow	è points	to	frame)	
 ![picture 6](images/395067bb30188816cf171d8c8e17ba01d28b7913641b1ba31fffe9537628284d.png)  
 
 - OPT	incurs	6	page	faults,	1	beyond	obligatory	
   - This	is	the	minimal	number	possible	
-- OPT	is	op6mal,	but	not	realistic	
+- OPT	is	optimal,	but	not	realistic	
   - Requires	predicting	the	future	
   - Useful	as	a	benchmark	
 
@@ -1561,7 +1566,7 @@ Physical	address	=	base	of	s	+	i
 ![picture 3](images/35bb5e81167e5de029f3581f7911376d066772db1de2a48b43b46fa67f994e1c.png)  
 
 - Multiprogramming	level:	number	of	processes	 in	physical	memory	(non-empty	resident	sets)	
-- Goal:	increase	mul6programming	level	–	how?	
+- Goal:	increase	multiprogramming	level	–	how?	
 - However,	beyond	certain	point:	thrashing	
 - Resident	set	should	contain	the	working	set
 
@@ -1569,7 +1574,7 @@ Physical	address	=	base	of	s	+	i
 ![picture 4](images/2212b3fac0060680397ff85ac7b2523e97824ba6800923e847a98b5891d4b2af.png)  
 
 - Working	set:	W(t,	∆)	
-  - Pages	referenced	during	last	delta	(process	6me)	
+  - Pages	referenced	during	last	delta	(process	time)	
 - Process	given	frames	to	hold	working	set	
 - Add/remove	pages	according	to	W(t,	∆)	
 - If	working	set	doesn’t	fit,	swap	process	out
@@ -1595,7 +1600,7 @@ Physical	address	=	base	of	s	+	i
 ## File	System	Abstraction
 - Repository	of	objects	
   - Objects	are	data,	programs,	for	system,	users	
-  - Objects	referenced	by	name,	to	be	read/wriUen	
+  - Objects	referenced	by	name,	to	be	read/written	
 - Persistent:	remains	“forever”	
 - Large:	“unlimited”	size	
 - Sharing:	controlled	access	
@@ -1604,7 +1609,7 @@ Physical	address	=	base	of	s	+	i
 ## More	than	a	Repository
 - Any/all	objects	where	following	make	sense	
   - Accessed	by	name	
-  - Can	be	read	and/or	wriUen	
+  - Can	be	read	and/or	written	
   - Can	be	protected:	read-only,	read-write,	…	
   - Can	be	shared	
   - Can	be	locked	
@@ -1653,8 +1658,8 @@ Physical	address	=	base	of	s	+	i
 - Can	then	use	memory	ops	
   - x	=	addr[5];	strcpy	(addr,	“hello”);	
 - Issues	
-  - Efficient	for	mul6ple	processes	sharing	memory	
-  - If	memory	is	wriUen,	how	is	file	actually	updated?
+  - Efficient	for	multiple	processes	sharing	memory	
+  - If	memory	is	written,	how	is	file	actually	updated?
 
 ![picture 2](images/f5282bff1e7e5a6186ba6185da001239ec09c7958a39aa881278c57927f2b058.png)  
 
@@ -1662,7 +1667,7 @@ Physical	address	=	base	of	s	+	i
 - How	are	files	shared,	to	varying	degrees?	
 - Access	control	
   - Who	can	access	file	
-  - What	opera6ons	are	allowed	
+  - What	operations	are	allowed	
   - User	interface	must	be	simple	and	intuitive	
 - Example:	UNIX	
   - r/w/x	permissions	for	owner,	group,	and	everyone
@@ -1736,8 +1741,8 @@ Physical	address	=	base	of	s	+	i
 - 13	pointers	
   - 10	direct:	references	10	data	blocks	
   - 1	singly-indirect:	references	n	data	blocks	
-  - 1	doubly-indirect:	references	n2	data	blocks	
-  - 1	triply-indirect:	references	n3	data	blocks	
+  - 1	doubly-indirect:	references	n^2	data	blocks	
+  - 1	triply-indirect:	references	n^3	data	blocks	
 - n	depends	on	how	many	pointers	fit	in	a	block	
   - Example:	256	4-byte	pointers	will	fit	in	1KB	block	
 
@@ -1750,6 +1755,8 @@ Physical	address	=	base	of	s	+	i
   - Easy	to	keep	ordered	due	to	fast	inserts	and	deletes	
 - Bit	Map	
   - Fixed	size	regardless	of	fragmentation	
+
+
 ![picture 3](images/de41aa26415159c8393fbef2d8509ee2ce01462007881507a4933190b2ae07a1.png)  
 
 ## File	Name	to	File	Control	Block
@@ -1788,14 +1795,14 @@ Physical	address	=	base	of	s	+	i
 - But,	disks	are	slow,	because	they	are	mechanical
 
 ## File	System	Performance
-- Disk	accesses	are	6me	expensive:	5-20	msec!	
+- Disk	accesses	are	time	expensive:	5-20	msec!	
 - Rotational	latency:	2-6	msec	(5400-15000	RPM)	
-- Seek	6me:	3-13	msec
+- Seek	time:	3-13	msec
 - Transfer	rate:	100+	MB/sec	
 - Reduce	accesses	by	
-- reading	mul6ple	blocks	in	one	access	(read	ahead)	
+- reading	multiple	blocks	in	one	access	(read	ahead)	
 - maintaining	a	block	cache	
-- Cluster	related	blocks	to	reduce	seek	6me	
+- Cluster	related	blocks	to	reduce	seek	time	
 
 ## Solid	State	Drives	(SSD)	
 - NAND-based	flash	memory,	non-volatile	
@@ -1814,7 +1821,7 @@ Physical	address	=	base	of	s	+	i
 - Data	blocks	of	files	
 - File	system	metadata	(keep	in	memory)	
 - File	metadata	
-  - Currently	ac6ve	files	
+  - Currently	active	files	
   - Recently	used	
 - Block	maps	
 - File	names	
@@ -1830,7 +1837,7 @@ Physical	address	=	base	of	s	+	i
 
 ## Performance:	Block	Size	
 - What	should	the	block	size	be?	
-  - The	larger	the	block,	the	beUer	the	throughput	
+  - The	larger	the	block,	the	better	the	throughput	
   - The	smaller	the	block,	the	less	wasted	space	
 - Technology	trends	
   - Disk	density	is	increasing	faster	than	disk	speed	
