@@ -268,3 +268,26 @@ class Solution:
 - 矩阵问题若为n^2logn复杂度，可能为对每一行进行排序
 
 数据范围为400是典型的o（n3）复杂度
+
+- 异或的题目考虑字典树
+- dp有两种，用过去的状态更新现在的状态，用现在的状态更新未来的状态
+
+
+快速幂
+```python
+    dic = dict()
+    def helper(n):
+        if n in dic:
+            return dic[n]
+        if n == 0:
+            return 1
+        if n == 1:
+            return 3
+        
+        ans = helper(n//2) * helper(n - n//2)%const
+        
+        dic[n] = ans
+        
+        return ans%const
+
+```
