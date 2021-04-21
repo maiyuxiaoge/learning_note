@@ -291,3 +291,10 @@ class Solution:
         return ans%const
 
 ```
+
+- 双层for循环复杂度不一定是on2
+- 如果是统计次数or个数的题目，可以逆向思维遍历每一个可能性
+
+
+- 堆的问题可以考虑直接排序
+- 不要使用heapq.heapify 复杂度过高

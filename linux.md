@@ -1,3 +1,4 @@
+[toc]
 # MSDOS（MBR） 与 GPT 磁盘分区表（partition table）
 
 ## MSDOS （MBR） 分区
@@ -164,3 +165,168 @@
 - 单一目录不应该重复挂载多个档案系统
 - 要作为挂载点的目录，理论上应该是空目录，否则原目录底下的东西会暂时消失
 
+## 交换空间（swap）
+- 原先因为存储不足，可以暂时吧记忆体的程序放到硬盘中，称为交换空间
+- 如果硬件的配备足够，那么交换空间就不会被我们的系统使用
+- 对于个人linux可能影响不大，对于服务器很重要
+
+# 文档压缩
+- gzip, bzip2, xz 无法将多个文件压缩成一个文件，tar可以
+
+## xfs系统备份工具 xfsdump
+- 可以进行完整备份（full backup) 也可以进行累计备份（incremental backup）
+- 累计备份只会记录与第一次完整备份所有差异的文档
+![picture 1](images/6c6d4e0370221cd73340f6937a1764efc5fdbb805aefa15cd292c4cb81ba9b4b.png)  
+
+
+# bash
+- shell将我们的输入和kernel沟通，好让kernel可以控制硬件正确工作
+![picture 2](images/f6a8c6aa0fb4b18b5abd1262d900b770dc0e618187d969134667d1e1c8bf24e2.png)  
+
+## login shell 和 non-login shell
+- login shell： 取得bash时需要完整的登入流程，比如通过tty1-tty6登入
+- non-login shell： 取得bash的方法不许压迫重复登入的举动， 比如用xwindow登入后，再用图形化界面启动终端， 在原本的bash环境下再次下达bash这个指令
+
+## 管道（pipe)
+- 管道命令仅仅嗯那个处理经由前面一个指令传来的正确资讯，对于error没有处理能力
+![picture 3](images/3898e5c740ec4ef8fbdcd1778ebf2b9d6562d95582741848ac93aeba0761ffe8.png)  
+
+
+# linux账号管理和acl权限设置
+- linux主机并不会直接识别账号名称，而是根据uid和gid
+
+## linux 登录流程
+1. 先在 /etc/passwd 中查找输入的账号，得到uid和gid
+2. 核对密码表
+3. 进入shell控制的阶段
+
+## 有效群组effective group和初始群组initial group
+- 初始群组： 登陆后所在的群组
+- 有效群组： 当前所在的群组
+
+
+# 细部权限规划： acl的使用
+- acl： access control list 提供owner，group，other，rwx以外的多种权限
+- 可以针对单一用户设定权限
+
+## sudo执行流程
+1. 在/etc/sudoers 档案中搜索用户是否有sudo权限
+2. 让用户输入密码
+3. 执行sudo命令
+
+# 磁盘配额Quota
+- 起因： 多人多工的环境，应该限制硬盘的容量给使用者，以妥善的分配系统资源
+
+## quota的使用限制
+- 仅能针对整个文件系统
+- 核心必须支持quota
+- 只对一般身份使用者有效
+- 如果启用selinux，不是所有目录都可以设置quota
+
+# 磁盘阵列 raid
+- 可以通过一项软件或硬件，把多个较小的磁盘整合成一个较大的磁盘
+- 具有存储和保护的功能
+
+## 常见level
+- raid 0： 每个磁盘交错存放数据
+![picture 4](images/db0089f3e81de714462de21f3994f0477936ee1bb84468d09bc4ca199b894eb9.png)  
+
+- raid 1： 让同一份资料，完整保存在两个磁盘上
+![picture 5](images/e6b438485356c0982549e4a1fa431f30e6fa862cedb3a80a066c2265e9d26ea9.png)  
+
+- raid 1+ 0： 先让两颗磁盘组成raid 1， 将两组raid1 组成一组raid 0
+![picture 6](images/2a933b55177628ddfb5b9df083b65e6bcd8c966ec2400beda7f4c50d4f88a8a7.png)  
+
+- raid 5： 类似raid 0 ，但在每个磁盘中还加入一个同位检查资料Parity，这个资料会记录其他磁盘的备份资料
+![picture 7](images/0054044c69edbb6cdb9b18591a2681d3886790eb9eeaec929d07e55039789006.png)  
+  - raid 5 的总容量是整体磁盘数量减一
+
+## spare disk
+- 一颗没有包含在原本磁盘阵列中的磁盘，平常不会被使用，在有任何磁盘损毁时，会被主动拉进阵列中，将坏掉的磁盘移除阵列，然后重建系统
+
+## 硬件磁盘阵列： 
+- 通过硬盘上专门的芯片完成处理raid的任务
+- 不会重复消耗原本系统的io资源，理论上效能比较好
+- 价格较贵，主板可能不支持高级raid level
+
+## 软件磁盘阵列
+- 通过软件来模拟阵列的任务
+- 会消耗比较多的系统资源
+
+# 逻辑卷轴管理员 logical volume manager
+- 可以弹性的调整filesystem的容量
+- 通过软件将实体的硬盘组合成一块看起来独立的大磁盘(VG)， 然后将这块大磁盘分割成可使用分割槽(LV),最终就能挂载使用了
+- lvm主要的用处在于实现一个可以弹性调整容量的档案系统上，而不是一个以效能为主的磁盘上
+
+## physical volume PV 实体卷轴
+- 实际的disk
+
+## volume group VG 卷轴群组
+- 许多PV整合成的大磁盘
+
+## physical extent PE 实体范围区块
+- 类似档案系统里的block大小
+
+## logical volume LV 逻辑卷轴
+- 最终VG会被切成LV， LV就是最后可以被格式化使用的
+
+![picture 8](images/940ba359cce89c43c9baa6cbf8267871e236ddca0b48dbd8389ff2ae327073c9.png)  
+![picture 9](images/ed82b1fa6a5769a36015ec3cd2ed32acc8c6ed656833146de972ea0ea642d526.png)  
+
+## 使用lvm thin machine 让lvm动态自动调整磁盘使用率
+- 先建立一个可以实支实付、用多少容量才分配实际写入多少容量的磁碟容量储存池(thin pool)， 然后再由这个thin pool 去产生一个『指定要固定容量大小的LV 装置』
+
+# 例行性工作排程 crontab
+## at: 可以处理一次就能结束排程的指令
+- 将这个工作以文字档的方式写入/var/spool/at/目录内
+## crontab： 指令所设定的工作将会循环的一直进行下去
+
+## 可唤醒停机期间的工作任务
+- anacron: 处理非24 小时一直启动的Linux 系统的crontab 的执行
+- anacron 会去分析现在的时间与时间记录档所记载的上次执行anacron 的时间,然后开始执行未进行的crontab 任务
+
+# 程序管理与SELinux 初探
+## 程序与进程
+- 程序program： 实体档案
+- 进程 process： 权限属性和program会被写入内存， 并给他一个一个识别码 (PID)，程序就是一个正在运作中的程式。
+
+## 子程序和父程序
+- 衍生出来的程序
+![picture 1](images/3b0c07f0fe67defa73c81c0b0ca5dd6def5c5012beed80f735a3960973198e5f.png)  
+
+## fork and exec: 程序呼叫的流程
+![picture 2](images/e16d35edad9c8dd22d8264ead97cd423b09a060150e0981c22fd8ed3620b98b0.png)  
+
+- 系统先以fork的方式复制一个与父程序相同的暂存程序，唯一区别是pid不同，多一个ppid参数
+- 暂存程序开始以exec的方式载入实际要执行的程序
+
+## job control 工作管理
+- 在单一终端机界面下同时进行多个工作的行为管理
+- 条件：
+  - 这些工作所触发的程序必须来自你shell的子程序
+  - 前景： 你可以控制和下达命令的环境成为前景的工作
+  - 背景：可以自行运行的工作，你无法用ctrl+c终止，可以用 bg/fg 呼叫
+  - 背景中执行的程序不能等待terminal和shell的输入
+
+## 程序管理
+- 如果所有的程序同时被唤醒，那么cpu应该先处理哪个程序？
+- Priority 与Nice 值
+  - 优先执行序(priority, PRI):PRI值越低代表越优先,PRI值是由核心动态调整的，使用者无法直接调整PRI值
+  - PRI(new) = PRI(old) + nice: 使用者可以调整nice值，当nice值为负值时，那么该程序就会降低PRI值，会优先被处理
+
+# SELinux
+- Security Enhanced Linux 
+- SELinux是在进行程序、档案等细部权限设定依据的一个核心模组
+- 自主式存取控制(Discretionary Access Control, DAC):依据程序的拥有者与档案资源的rwx权限来决定有无存取的能力
+  - root具有最高的权限
+  - 使用者可以取得程序来变更档案资源的存取权限
+- 委任式存取控制, MAC: 针对特定的程序与特定的档案资源来进行权限的控管
+
+## SELinux 的运作模式
+- 主体(Subject): 程序
+- 目标(Object)：主体程序能否存取的『目标资源』一般就是档案系统
+- 政策(Policy)：依据某些服务来制订基本的存取安全性政策
+- 安全性本文(security context)：主体与目标的安全性本文必须一致才能够顺利存取,类似档案系统的rwx
+![picture 3](images/2d8995ebc90154cafba346f082d4a3429b381bd52679ad0343392576c66696e3.png)  
+- 安全性本文是放置到档案的inode内的
+![picture 4](images/fcdc03d154777fce244cf74d52025083c8f7c7eda8dc1ea0599caf4d88b6fba9.png)  
