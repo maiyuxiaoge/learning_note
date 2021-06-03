@@ -536,3 +536,207 @@ public:
 
 
 - 参考资料： https://refactoring.guru/refactoring/smells
+
+
+# 仿函数Functor
+- c++中： 重载operator() 运算符
+```cpp
+class compare_class{
+public:
+    bool operator()(int A, int B)const{return A < B;}
+};
+// Declaration of C++ sorting function.
+template<class ComparisonFunctor>
+void sort_init(int *begin_items, int num_item, CompareFunctor c)
+{
+    for(int i = 0; i < num_item; i++)
+    {
+        for(int j = i + 1; j < num_item; j++)
+        {
+            if( c(begin_items[i], begin_items[j]) )
+            {
+                int temp = begin_items[i];
+                begin_items[i] = begin_items[j];
+                begin_items[j] = temp;
+            }
+        }
+    }
+}
+int main(){
+    int items[]={4, 3, 1, 2};
+    compare_class functor;
+    sort_ints(items, sizeof(items)/sizeof(items[0]), functor);
+}
+````
+- Java: 实现包含单个函数的接口
+```java
+List<String> list =Arrays.asList("10", "1", "20", "11", "21", "12");
+Comparator<String> numStringComparator =new Comparator<String>(){
+    publicint compare(String o1, String o2){
+        returnInteger.valueOf(o1).compareTo(Integer.valueOf(o2));
+    }
+};
+Collections.sort(list, numStringComparator);
+```
+
+- 作用：
+  - 有些功能实现的代码，会不断的在不同的成员函数中用到，但是又不好将这些代码独立出来成为一个类的一个成员函数
+  - 函数拥有类的性质，安全传递函数指针
+  - 公共的函数但不让函数用到的一些变量，成为公共的全局变量
+
+# callback 回调函数
+![picture 1](images/ae0b6ab6163c90df4231c0fcf797bf2c37fec53c74bdcfb340658059574b320a.png)  
+
+- 举例：
+  - 排序算法的人可以写好了算法，但是compare由callback提供。这个是同步回调。但是sort算法和compare解耦了。
+  - 起始函数是调用sort()的人，中间函数是sort()，回调函数是compare()
+
+# std:function
+- 包装一个类的静态成员函数，成员函数，函数，functor，使其成为Functor
+- 可以统一不同的函数对象类型
+- 用法：
+  - 一般形式
+    ```cpp
+    std::function< int(int)> Functional;
+    auto lambda = [](int a)->int{ return a; };
+    Functional = lambda;
+    result = Functional(20);
+    ```
+  - 类的成员函数需要额外使用std::bind
+    ```cpp    
+    TestClass testObj;
+    Functional = std::bind(&TestClass::ClassMember, testObj, std::placeholders::_1);
+    result = Functional(40);
+    ```
+
+# std::bind
+- 它可以预先把指定可调用实体的某些参数绑定到已有的变量，产生一个新的可调 用实体
+- 回调函数的使用过程中也颇为有用
+```cpp
+auto bindFunc1 = bind(TestFunc, std::placeholders::_1, 'A', 100.1);
+bindFunc1(10);
+```
+- 注意点
+  - 预先绑定的参数，是pass-by-value的
+  - 对于不事先绑定的参数，需要传std::placeholders进去，从_1开始，依次递增。placeholder是pass-by-reference的
+  - 如果想预先绑定引用传递，需要用std::ref和std::cref
+
+
+# std::thread
+- 构造函数传参为值传递，如果需要传引用需要用std::ref
+
+# std::mem_fm
+- 类似 std::bind， 写法更简洁但是不能绑定参数
+
+# lock_guard 和 unique_guard
+- lock_guard使用起来比较简单，除了构造函数外没有其他member function
+- unique_guard除了lock_guard的功能外，提供了更多的member_function
+- unique_lock是对lock_guard的扩展，允许在生命周期内再调用lock和unlock来加解锁以切换锁的状态
+- 类 unique_lock 是通用互斥包装器，允许延迟锁定、锁定的有时限尝试、递归锁定、所有权转移和与条件变量一同使用
+
+# std::scoped_lock lock_guard
+- scoped-lock是lock——guard的升级，一般情况使用scoped lock
+- scoped-lock 可以一次传入多个锁
+```cpp
+friend void swap(X& lhs, X& rhs)
+{
+    if (&lhs == & rhs)
+        return;
+    std::lock(lhs.m, rhs.m);
+    std::lock_guard<std::mutex> lock_a(lhs.m, std::adopt_lock);
+    std::lock_guard<std::mutex> lock_b(rhs.m, std::adopt_lock);
+    swap(lhs.some_detail, rhs.some_detail);
+}
+vs.
+
+friend void swap(X& lhs, X& rhs)
+{
+    if (&lhs == &rhs)
+        return;
+    std::scoped_lock guard(lhs.m, rhs.m);
+    swap(lhs.some_detail, rhs.some_detail);
+}
+```
+
+# explicit关键字
+-  在C++中, 如果的构造函数只有一个参数时, 那么在编译的时候就会有一个缺省的转换操作:将该构造函数对应数据类型的数据转换为该类对象.
+-  explicit关键字的作用就是防止类构造函数的隐式自动转换
+-  如果类构造函数参数大于或等于两个时, 是不会产生隐式转换的
+-  除了第一个参数以外的其他参数都有默认值的时候, explicit关键字依然有效
+-  https://blog.csdn.net/guoyunfei123/article/details/89003369
+
+# mutable 关键字
+- 在C++中，mutable也是为了突破const的限制而设置的。被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中
+
+# const 函数
+- 如果类的成员函数不会改变对象的状态，那么这个成员函数一般会声明成const的
+
+# std::unique_ptr
+![picture 2](images/595ab694790a93077bc2c04e0d99a7e840c52bbb65dca00fdabdb02fea0f3310.png)  
+
+# C++模板的偏特化与全特化
+## 函数模板
+```cpp
+// 类模板
+template <class T1, class T2>
+class A{
+    T1 data1;
+    T2 data2;
+};
+
+// 函数模板
+template <class T>
+T max(const T lhs, const T rhs){   
+    return lhs > rhs ? lhs : rhs;
+}
+```
+
+## 全特化
+```cpp
+// 全特化类模板
+template <>
+class A<int, double>{
+    int data1;
+    double data2;
+};
+
+// 函数模板
+template <>
+int max(const int lhs, const int rhs){   
+    return lhs > rhs ? lhs : rhs;
+}
+
+template <class T>
+void f(){ T d; }
+
+template <>
+void f<int>(){ int d; }
+```
+
+## 偏特化
+```cpp
+template <class T2>
+class A<int, T2>{
+    ...
+};
+
+```
+- 函数模板不允许偏特化,但可以重载
+```cpp
+template <class T1, class T2>
+void f(){}
+
+template <class T2>
+void f<int, T2>(){}//错误
+
+template <class T2>
+void f(){}              // 注意：这里没有"模板实参"
+
+```
+
+# 函数式编程特点
+- 函数是"第一等公民"，函数与其他数据类型一样，处于平等地位
+- 只用"表达式"，不用"语句"。"表达式"（expression）是一个单纯的运算过程，总是有返回值；"语句"（statement）是执行某种操作，没有返回值。
+- 没有"副作用"。函数要保持独立，所有功能就是返回一个新的值，没有其他行为，尤其是不得修改外部变量的值。
+- 不修改状态。函数式编程只是返回新的值。不修改变量，意味着状态不能保存在变量中。函数式编程使用参数保存状态，最好的例子就是递归。
+- 引用透明。函数的运行不依赖于外部变量或"状态"，只依赖于输入的参数。
