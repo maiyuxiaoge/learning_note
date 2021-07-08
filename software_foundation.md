@@ -628,7 +628,7 @@ bindFunc1(10);
 # std::mem_fm
 - 类似 std::bind， 写法更简洁但是不能绑定参数
 
-# lock_guard 和 unique_guard
+# lock_guard 和unique_guard
 - lock_guard使用起来比较简单，除了构造函数外没有其他member function
 - unique_guard除了lock_guard的功能外，提供了更多的member_function
 - unique_lock是对lock_guard的扩展，允许在生命周期内再调用lock和unlock来加解锁以切换锁的状态
@@ -740,3 +740,69 @@ void f(){}              // 注意：这里没有"模板实参"
 - 没有"副作用"。函数要保持独立，所有功能就是返回一个新的值，没有其他行为，尤其是不得修改外部变量的值。
 - 不修改状态。函数式编程只是返回新的值。不修改变量，意味着状态不能保存在变量中。函数式编程使用参数保存状态，最好的例子就是递归。
 - 引用透明。函数的运行不依赖于外部变量或"状态"，只依赖于输入的参数。
+
+# C++'s most vexing parse
+## 1
+T1 name(T2());
+这是一个 declaration statement。
+既可视作声明了一个类型为 T1 名为 name 的 object，并且用一个类型为 T2 的 object 作为其 initilizer（即标准中所谓「an object declaration with a function-style cast as the initializer」），也可视作声明了一个返回值类型为 T1 名为 name 的函数，此函数有一个参数，参数类型为「指向返回值类型为 T2，参数为空的函数的指针」。
+
+C++ 标准规定把这样的 statement 视作函数声明。
+
+## 2
+T1 name1(T2(name2));
+
+根据 C++ 标准，此时不把 T2(name2) 视为「a function style cast」，而将其视为 T2 name2，这样整个语句就变成
+T1 name1(T2 name2);，显然这是个函数声明。
+
+类似地，
+T1 name1(T2(name2), T3(name3)); 被视作 T1 name1(T2 name2, T3 name3);
+
+# future_task, promise区别
+https://www.cnblogs.com/guxuanqing/p/11360572.html
+
+# steady_clock， system_clock 和 high_resolution_clock
+- steady_clock 是单调的时钟，相当于教练手中的秒表；只会增长，适合用于记录程序耗时；
+- system_clock 是系统的时钟；因为系统的时钟可以修改；甚至可以网络对时； 所以用系统时间计算时间差可能不准。
+- high_resolution_clock 是当前系统能够提供的最高精度的时钟；它也是不可以修改的。相当于 steady_clock 的高精度版本。
+
+# C++11中的POD和Trivial
+## POD类型
+- POD是一个类型属性，既不是关键字也不会像”volatile”用来修饰类型信息
+- POD类型，说明该数据是普通的，不会有什么虚函数啊，虚继承啊，或者内嵌的数据类型很复杂的情况。
+- 可以直接使用memcpy()直接复制而不会出现任何问题
+- 两种最基本的属性：
+  1. 支持静态初始化
+  2. 编译C++中的POD类型所得到的内存布局，和C中编译struct的内存布局相同
+
+## Trivial平凡类型
+- 拥有平凡的构造函数(trivial constructor)和析构函数(trivial destructor)
+  - 通常情况下，不定义类的构造函数，编译器就会为我们生成一个平凡的默认构造函数   
+- 拥有平凡的拷贝构造函数（trivial copy constructor）和移动构造函数（trivial copy constructor)
+  - 编译器在用户不提供的情况下，通常会提供平凡的拷贝构造函数
+  - 拥有平凡的拷贝赋值运算符（trivial assignment operator）和移动赋值运算符（move operator）
+  - 不能包含虚函数以及虚基类
+- C++11提供了内置函数来支持Trivial类型的判断: template <typename T> struct std::is_trivial
+
+## POD类型的好处
+- 字节赋值(bytewise copy)。可以使用memset和memcpy对POD类型进行初始化
+- 提供对C内存布局的兼容。C++程序可以与C函数进行交互操作，POD类型保证这种在C与C++之间的操作总是安全的
+- 保证了静态初始化的安全有效，用于提供程序性能。直接放入.bss段，在初始化中直接赋0
+
+# c++ 内存序
+- https://www.cnblogs.com/mataiyuan/p/13372374.html
+- memory_order_release保证在这个操作之前的memory accesses不会重排到这个操作之后去，但是这个操作之后的memory accesses可能会重排到这个操作之前去。
+- memory_order_acquire保证在这个操作之后的memory accesses不会重排到这个操作之前去，但是这个操作之前的memory accesses可能会重排到这个操作之后去。
+- 对于seq_cst模式下的操作，所有memory accesses操作的重排不允许跨域这个操作，同时这个限制是双向的
+- Consume是一个相比Acquire/Release更加宽松的内存模型，对非依赖的变量也去除了happens-before的限制
+- memory_order_relaxed没有happens-before的约束，编译器和处理器可以对memory access做任何的re-order
+
+# Cache ping-pong
+- cache ping-pong等效于cache失效，每次CPU都要从RAM中加载数据，这会导致很大的性能问题，这也是编写多线程程序需要考虑的设计问题。应该尽量避免代码中多个线程对同一数据资源的竞争。
+
+- 当多个core要并行操作内存中的同一份数据，就会出现Cache ping-pong的问题，举个例子：
+  1. core1 从内存中加载Cache line做操作
+  2. core2 也要对这个数据操作，于是它也加载了这个Cache line。core1发现core2加载了这个cache line，于是让自己的加载的cache line失效
+  3. core1 又需要处理这个数据，core1需要重新从内存中加载这个cache line，同时导致core2的cache line失效
+  4. core2 又要处理这个数据，又要加载cache line，导致core1的cache line失效
+  5. 如此反复。

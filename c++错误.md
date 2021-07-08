@@ -22,3 +22,28 @@ oPerson.mutable_profile()->CopyFrom(*pProfile);
 Or equivalently:
 
 *oPerson.mutable_profile() = *pProfile;
+
+## c++ 开启core dump
+ulimit  -c unlimited
+
+# linux 开启交换空间
+sudo dd if=/dev/zero of=/swapfile bs=64M count=16
+
+sudo mkswap /swapfile
+
+sudo swapon /swapfile
+
+After compiling, you may wish to
+
+Code:
+
+sudo swapoff /swapfile
+
+sudo rm /swapfile
+
+# git error: RPC failed； result=35, HTTP code = 0 fatal: The remote end hung up unexpectedly
+后来，通过设置Git的http缓存大小，解决了这个问题，在当前工程目录下运行如下命令：
+
+git config --global http.postBuffer 20M
+
+如果20M不行就 50M
